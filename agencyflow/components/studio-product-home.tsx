@@ -102,7 +102,6 @@ export default function StudioProductHome({ kind }: { kind: ProductKind }) {
               >
                 회사 계정으로 시작
               </a>
-            </div>
             <a
               className="button"
               href={"/manuals/" + kind + "-guide-charts-20261101.pdf"}
@@ -111,6 +110,7 @@ export default function StudioProductHome({ kind }: { kind: ProductKind }) {
             >
               제품소개서 보기 ↗
             </a>
+            </div>
             <small>
               초기 검증판입니다. 샘플은 이 브라우저에만 저장되며 회사 모드는
               검증된 계정과 내부 팀 권한이 필요합니다.

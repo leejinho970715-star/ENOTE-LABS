@@ -20,14 +20,6 @@ export default function Home() {
         </nav>
       </header>
       <main className="public-main">
-        <a
-          className="button"
-          href="/manuals/agencyflow-guide-charts-20261101.pdf"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          제품소개서 보기 ↗
-        </a>
         <section className="public-hero">
           <div>
             <span className="eyebrow">FOR EVERY PROJECT</span>
@@ -48,6 +40,14 @@ export default function Home() {
               <a className="button" href="/workspace/?mode=cloud">
                 회사 계정으로 시작
               </a>
+        <a
+          className="button"
+          href="/manuals/agencyflow-guide-charts-20261101.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          제품소개서 보기 ↗
+        </a>
             </div>
             <small>
               샘플은 가상 자료입니다. 회사 계정은 초기 검증 단계이며 이메일

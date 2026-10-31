@@ -6,6 +6,7 @@ import {
   useRef,
   type FormEvent,
 } from "react";
+import ProductGuide from "./product-guide";
 import DataChart from "./data-chart";
 import {countSeries,sumSeries,dueSeries,daySeries,dayKey} from "../../demos/weekly-report/charts.js";
 import { db } from "../lib/data";
@@ -1476,6 +1477,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
           </form>
         </dialog>
       )}
+      <ProductGuide product={kind} onNavigate={setView} />
     </div>
   );
 }

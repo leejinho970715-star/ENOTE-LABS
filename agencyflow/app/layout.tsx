@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./product-guide.css";
 import "../../demos/weekly-report/charts.css";
 import "../../demos/weekly-report/controls.css";
 const origin =

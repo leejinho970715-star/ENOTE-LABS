@@ -9,4 +9,4 @@
 .account-page #auth>button,.account-page #auth+button[data-action="switch"]{height:44px;min-height:44px}
 .account-page #auth+button[data-action="switch"]{margin-top:12px}
 .button-stack{display:flex;flex-wrap:wrap;gap:12px}
-@media(max-width:680px){.app-rail .rail-bottom{flex-direction:row}.app-rail .rail-bottom>*{flex:1 1 150px}.actions>.button,.actions>button{flex:1 1 150px}.section-heading>button,.section-head>button{flex-shrink:0}}
+@media(max-width:680px){.app-rail .rail-bottom{flex-direction:row}.app-rail .rail-bottom>*{flex:1 1 150px}:is(.app-shell,#workspace-app,.account-page,.report-demo) .actions>:is(.button,button){flex:1 1 150px}.section-heading>button,.section-head>button{flex-shrink:0}}

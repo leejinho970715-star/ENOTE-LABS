@@ -31,6 +31,7 @@ import {
   type Project,
   type Feedback,
 } from "../../lib/domain";
+import ProductGuide from "../../components/product-guide";
 import DataChart from "../../components/data-chart";
 import {countSeries,dueSeries} from "../../../demos/weekly-report/charts.js";
 import { stageLabels, projectSummary } from "../../lib/pms";
@@ -2166,6 +2167,7 @@ export default function Workspace() {
           </form>
         </dialog>
       )}
+      <ProductGuide product="projectflow" internal={!clientView} onNavigate={next=>setView(next as View)} />
     </div>
   );
 }
