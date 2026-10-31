@@ -383,7 +383,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
           ))}
         </nav>
         <div className="rail-bottom">
-          <a className="button" href={"https://enote-labs.vercel.app/suite/?mode="+(demo?"demo":"cloud")+"&org="+org?.id}>제품 연결 ↗</a>
+          <a className="button" href={"https://enote-labs.vercel.app/suite/?mode="+(demo?"demo":"cloud")+"&org="+(org?.id || (demo?"demo-org":""))}>제품 연결 ↗</a>
           <a
             href={"/manuals/" + kind + "-guide-charts-20261101.pdf"}
             target="_blank"

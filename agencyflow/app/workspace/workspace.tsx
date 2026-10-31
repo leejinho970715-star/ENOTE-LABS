@@ -229,7 +229,7 @@ export default function Workspace() {
     history.replaceState(
       null,
       "",
-      isDemo ? "/workspace/" : "/workspace/?mode=cloud",
+      location.pathname + (isDemo ? "" : "?mode=cloud"),
     );
     if (!isDemo && session) refresh();
   }
@@ -439,7 +439,7 @@ export default function Workspace() {
             ))}
         </nav>
         <div className="rail-bottom">
-          {!clientView && <a className="button" href={"https://enote-labs.vercel.app/suite/?mode="+(demo?"demo":"cloud")+"&org="+org?.id}>제품 연결 ↗</a>}
+          {!clientView && <a className="button" href={"https://enote-labs.vercel.app/suite/?mode="+(demo?"demo":"cloud")+"&org="+(org?.id || (demo?"demo-org":""))}>제품 연결 ↗</a>}
           <a
             href="/manuals/agencyflow-guide-charts-20261101.pdf"
             target="_blank"
@@ -1907,9 +1907,8 @@ export default function Workspace() {
                         onClick={async () => {
                           try {
                             await navigator.clipboard.writeText(
-                              location.origin +
-                                "/workspace/?mode=cloud&project=" +
-                                project.id,
+                              location.origin + location.pathname +
+                                "?mode=cloud&org=" + org.id + "&project=" + project.id,
                             );
                             setNotice(
                               "프로젝트 링크를 복사했습니다. 초대된 계정으로 로그인해야 열립니다.",
