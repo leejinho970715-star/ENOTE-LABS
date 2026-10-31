@@ -104,6 +104,7 @@ export type Task = {
   owner_name: string;
 };
 export type Org = {
+  free_access?: boolean;
   id: string;
   name: string;
   role: string;
@@ -157,7 +158,7 @@ export function quoteTotal(lines: QuoteLine[]) {
 export function readOnly(org?: Org, now = Date.now()) {
   return (
     !org ||
-    !(
+    !(org.free_access === true ||
       org.subscription_status === "active" ||
       (org.subscription_status === "trialing" &&
         new Date(org.trial_ends_at).getTime() > now)

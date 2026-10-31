@@ -105,7 +105,7 @@ export default function StudioProductHome({ kind }: { kind: ProductKind }) {
             </div>
             <a
               className="button"
-              href={"/manuals/" + kind + "-guide-orange-20261031.pdf"}
+              href={"/manuals/" + kind + "-guide-charts-20261101.pdf"}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -145,9 +145,7 @@ export default function StudioProductHome({ kind }: { kind: ProductKind }) {
         <section className="public-section">
           <h2>팀의 실제 방식에 맞춰 시작하세요.</h2>
           <p>
-            회사별 접근 제한과 저장, 공통 팀 계정 연결을 제공합니다. 14일 검증
-            체험은 ProjectFlow와 같은 회사 공간의 체험 기간을 사용합니다. 체험
-            종료 시 기존 자료는 조회할 수 있지만 쓰기는 제한됩니다.
+            구현된 기능은 기간 제한 없이 무료로 이용합니다. 회사 공유는 공통 회사 계정과 팀 권한을 사용하며, 등록량과 저장공간에는 운영 한도가 있습니다.
           </p>
           <p>
             {crm
@@ -155,8 +153,7 @@ export default function StudioProductHome({ kind }: { kind: ProductKind }) {
               : "전자서명·급여·근태·회계·실시간 사내 메신저를 모두 갖춘 종합 그룹웨어가 아닙니다. 현재는 공지·일정·내부 결재·업무 공유에 집중합니다."}
           </p>
           <p>
-            일반 고객 메일 발송과 구독 결제는 준비 중입니다. 익명화한 자료로
-            적합성을 확인하고, 도입 범위와 비용은 상담에서 정합니다.
+            데모로 업무 흐름을 확인한 뒤 필요한 화면과 연결을 맞춤 제작합니다. 1회 제작비 KRW 200,000~500,000, 부가세 별도이며 범위는 상담에서 확정합니다.
           </p>
           <a
             className="button primary"

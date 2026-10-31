@@ -1,0 +1,10 @@
+export type ChartSeries = {label:string;value:number;count?:number;missing?:number};
+export type ChartOptions = {kind?:'bar'|'donut'|'columns';unit?:string;title?:string;note?:string};
+export function countSeries(rows:readonly object[],key:string,order?:string[],labels?:Record<string,string>):ChartSeries[];
+export function sumSeries(rows:readonly object[],key:string,field:string,order?:string[],labels?:Record<string,string>):ChartSeries[];
+export function dayKey(value:unknown):string;
+export function dueSeries(rows:readonly object[],key:string,today:string,done?:(row:any)=>boolean):ChartSeries[];
+export function daySeries(rows:readonly object[],key:string,today:string,days?:number):ChartSeries[];
+export function periodSeries(rows:readonly object[],start:string,end:string,today:string):ChartSeries[];
+export function chartHTML(series:ChartSeries[],options?:ChartOptions):string;
+export function chartCardHTML(title:string,series:ChartSeries[],options?:ChartOptions):string;

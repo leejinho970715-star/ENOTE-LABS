@@ -6,8 +6,6 @@ from pathlib import Path
 import shutil, io, json, sys
 from xml.sax.saxutils import escape
 from PIL import Image
-from fontTools.ttLib import TTFont
-from fontTools.varLib.instancer import instantiateVariableFont
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont as RLFont
 from reportlab.pdfgen import canvas
@@ -25,6 +23,8 @@ PUBLIC=ROOT/'agencyflow/public'; TMP.mkdir(parents=True,exist_ok=True); OUT.mkdi
 for weight,name in [(400,'Pretendard'),(700,'PretendardBold')]:
     target=TMP/(name+'.ttf')
     if not target.exists():
+        from fontTools.ttLib import TTFont
+        from fontTools.varLib.instancer import instantiateVariableFont
         font=TTFont(ROOT/'demos/weekly-report/assets/PretendardVariable.woff2')
         font=instantiateVariableFont(font,{'wght':weight},inplace=True)
         font.flavor=None; font.save(target)
@@ -72,6 +72,31 @@ products['agencyflow'].update(steps=['고객 또는 내부 요청 부서를 등�
 ]+products['agencyflow']['screens'][2:],limits=['샘플은 이 브라우저에만 저장됩니다. 회사 모드는 기존 회사 권한과 DB 명령을 사용하며 이번 PMS 확장 동선의 실제 회사 계정 HTTP 검증은 수행하지 않았습니다.','프로젝트·작업·단계·기한·진척·자료 검토를 지원하는 1차 확장판입니다. 간트 차트·작업 의존관계·공수·반복 일정 자동화는 제공하지 않습니다.','결제·일반 고객 메일·전자서명·임의 웹사이트 자동 검수는 준비 중입니다.'])
 products['agencyflow']['screens']=[(v,t,d,['작업 범위에서 선택 프로젝트 또는 전체 프로젝트를 고릅니다.','프로젝트·담당자·마감일·우선순위를 등록하고 상태를 변경합니다.','완료 처리하면 해당 프로젝트의 작업 완료율에 반영됩니다.']) if v=='tasks' else (v,t,d,steps) for v,t,d,steps in products['agencyflow']['screens']]
 
+# Chart chapters use unmodified captures of the implemented dashboards.
+chart_chapters={
+ 'flownote':[
+ ('charts','보고 상태 · 프로젝트 기간','최신 보고서와 기간별 업무 현황을 구분합니다.',['보고 상태는 프로젝트·보고 기간별 최신 버전만 집계합니다. 수치표 보기에서 정확한 건수를 확인하세요.','프로젝트 기간은 한국 날짜와 등록 시작·종료일 기준입니다. 기간 종료가 납품 완료를 뜻하지 않습니다.','등록 자료가 없으면 미집계로 표시합니다. 수동 전달 기록과 고객 수신 확인은 다릅니다.']),
+ ('chart-projects','고객 · 담당자별 프로젝트','업무가 어디에 배분되어 있는지 살펴봅니다.',['고객·프로젝트 메뉴에서 현재 회사의 등록 프로젝트를 고객과 담당자별로 확인합니다.','담당자 미입력은 미지정으로 집계합니다. 실제 근무 시간이나 공수 평가는 아닙니다.','분류가 많으면 도표는 그 외 항목으로 묶고 수치표는 전체 분류를 제공합니다.']),
+ ('chart-reports','보고서 버전별 집계','조회 범위를 바꾸면 집계도 함께 달라집니다.',['보관함의 기본 도표는 프로젝트·기간별 최신 보고서 기준입니다.','이전 버전도 보기를 선택하면 과거 버전을 포함한 상태와 프로젝트별 보고서 수를 집계합니다.','보고 건수는 고객 수·매출과 다릅니다. 공개 체험의 자료는 가상 예시입니다.'])],
+ 'agencyflow':[
+ ('charts','프로젝트 단계 · 일정 도표','프로젝트의 분포와 마감 위험을 확인합니다.',['전체 흐름에서 현재 접근 가능한 활성 프로젝트의 단계를 비교합니다.','일정은 한국 날짜·종료 예정일 기준입니다. 완료·운영 단계는 종료로 분류합니다.','프로젝트 보드의 도표는 검색 결과와 같은 범위로 바뀝니다.']),
+ ('charts-work','작업 · 고객 피드백 도표','완료로 기록한 작업과 검토 요청을 구분합니다.',['작업 도넛은 등록 작업 상태의 건수를 보여줍니다. 작업 완료율은 납품 승인과 다릅니다.','고객 피드백 도표는 접근 가능한 프로젝트의 모든 자료 버전을 집계합니다. 자료 검토 화면에서는 선택 버전만 집계합니다.','고객 역할에는 내부 작업 도표를 표시하지 않습니다. 견적 화면의 버전별 총액은 VAT 포함 입력 견적이며 매출 합계가 아닙니다.']),
+ ('chart-tasks','작업 범위 · 마감 도표','선택 프로젝트와 전체 프로젝트를 전환합니다.',['작업 범위를 바꾸면 상태·마감 도표와 아래 작업 보드가 같은 범위로 바뀝니다.','기한 초과·오늘·7일 이내·8일 이후·날짜 미정·완료를 나눠 봅니다.','상태를 변경하면 도표도 갱신됩니다. 등록 작업이 없으면 진행률은 미측정입니다.'])],
+ 'follonote':[
+ ('charts','영업 단계 · 입력 금액 도표','진행 중인 기회와 규모를 살펴봅니다.',['영업 현황과 파이프라인에서 현재 회사의 보관하지 않은 영업기회를 단계별로 비교합니다.','금액 도표는 사용자가 입력한 기회 금액입니다. 확정 매출·수금·이익·매출 예측으로 해석하지 마세요.','미입력·형식 오류 금액은 합계에서 제외하고 별도 안내합니다. 고객 관리에서는 유입 경로의 등록 건수를 확인합니다.']),
+ ('chart-schedule','후속 연락 · 일정 도표','다음 연락과 처리 기록을 함께 확인합니다.',['등록 연락의 예정·완료 건수를 도넛으로 확인합니다. 연락 완료는 담당자가 직접 기록합니다.','마감 분포는 한국 날짜 기준이며 지난 날짜의 완료 연락은 기한 초과로 세지 않습니다.','도표의 수치표 보기를 열면 모든 분류의 정확한 숫자를 읽을 수 있습니다.'])],
+ 'crewmemo':[
+ ('charts','팀 업무 · 내부 결재 도표','실행 상태와 결재 상태를 따로 읽습니다.',['팀 업무 도넛은 현재 회사의 대기·진행중·완료 등록 건수입니다. 근무 시간·근태 집계가 아닙니다.','결재 도표는 조회 가능한 문서의 대기·승인·반려·취소 건수를 보여줍니다.','승인된 문서도 실제 지급이나 계약 전자서명을 자동 실행하지 않습니다.']),
+ ('chart-schedule','향후 7일 일정 도표','어느 날 일정이 몰려 있는지 확인합니다.',['오늘 포함 7일의 등록 일정 수를 시작일 기준으로 비교합니다. 한국 시간을 사용합니다.','일정이 없는 날의 0개와 조회할 등록 자료가 없는 상태를 구분합니다. 참석 여부를 추정하지 않습니다.','좁은 화면에서는 일정 도표 내부를 좌우로 움직일 수 있습니다.']),
+ ('chart-tasks','팀 업무 · 마감 분포','먼저 처리할 업무를 찾습니다.',['업무 메뉴에서 처리 상태와 기한 분포를 함께 확인합니다.','기한이 지난 미완료 업무와 완료 업무를 구분합니다. 담당자가 상태를 변경하면 도표에 반영됩니다.','ProjectFlow와 연결한 작업은 회사 모드에서 상태를 양쪽에 반영합니다. 제목·담당자·기한은 자동 덮어쓰지 않습니다.'])]}
+for key,chapters in chart_chapters.items():
+ products[key]['screens']+=chapters
+ products[key]['screens'].append(('suite','4개 제품 연결','영업에서 보고까지 같은 자료를 재사용합니다.',['제품 연결에서 공통 회사를 선택하고 CRM 고객과 프로젝트 고객을 연결합니다. 수주한 기회는 프로젝트로 생성할 수 있습니다.','프로젝트 작업은 내부 담당자를 지정해 Crewmemo로 연결합니다. Flownote는 양쪽 대표 관리자 확인 후 회사·CSV 고객·보고 프로젝트 순으로 연결합니다.','회사 모드의 연결 작업은 이력에 기록하며 중복 생성하지 않습니다. 고객 전체를 자동 병합하지 않고, Flownote 자료는 기존 회사 권한으로만 조회합니다.']))
+ products[key]['limits']=['구현된 기능은 월 구독료와 체험 만료 없이 무료입니다. 역할·등록량·파일 검증 등의 운영 제한은 유지합니다.','회사 공유는 이메일 확인 계정과 해당 회사 권한이 필요합니다. 일반 고객 가입 메일 서비스, 자동 결제·자동 발송 등 미연동 기능은 제공하지 않습니다.','기존 데모 기반의 작은 맞춤 제작은 KRW 200,000~500,000, 부가세 별도입니다. 신규 대규모 개발·호스팅·외부 서비스·유지관리는 별도 협의합니다.']
+products['flownote']['limits'].insert(0,'공개 대시보드는 가상 자료 조회용이며 CSV 검사는 브라우저에서 가능합니다. 보고서 작성·검수·승인 전체 화면은 로컬 운영판 범위입니다. 클라우드는 고객·프로젝트 등록과 연결 기반까지 제공합니다.')
+products['agencyflow']['limits'].insert(0,'회사 운영 한도는 활성 프로젝트 100개·내부 구성원 10명·시안 총 1GB·파일당 5MB입니다. 간트·작업 의존관계·공수·임의 웹사이트 자동 검수는 포함하지 않습니다.')
+products['agencyflow']['screens']=[(v,'팀 · 무료 이용' if v=='team' else t,d,['기존 가입·이메일 확인 계정을 관리자가 회사에 연결합니다. 고객은 지정 프로젝트만 조회합니다.','구현된 기능은 무료입니다. 활성 프로젝트 100개·내부 10명·시안 총 1GB·파일당 5MB의 운영 한도를 확인하세요.','팀원 접근 권한은 제품 연결과 별도로 확인합니다. 초대 메일은 자동 발송하지 않습니다.'] if v=='team' else steps) for v,t,d,steps in products['agencyflow']['screens']]
+
 def para(c,text,x,y,width=515,size=13,color=INK,bold=False):
     st=ParagraphStyle('p',parent=STYLE,fontName='PretendardBold' if bold else 'Pretendard',fontSize=size,leading=size*1.65,textColor=color)
     p=Paragraph(escape(text),st); _,height=p.wrap(width,1000);p.drawOn(c,x,y-height);return y-height-12
@@ -97,7 +122,7 @@ def shell(c,p,page,section):
     c.setFillColor(white);c.rect(0,0,W,H,fill=1,stroke=0);logo(c,p,40,H-66,30)
     c.setFillColor(INK);c.setFont('PretendardBold',12);c.drawString(82,H-47,products[p]['name'])
     c.setFillColor(MUTED);c.setFont('Pretendard',9);c.drawRightString(W-40,H-47,'ENOTE-LABS | 제품 소개 · 사용 가이드')
-    c.setStrokeColor(LINE);c.line(40,43,W-40,43);c.setFont('Pretendard',9);c.drawString(40,27,'2026.10.31 · 초기 검증판 · 가상 자료 화면');c.drawRightString(W-40,27,f'{page:02d}')
+    c.setStrokeColor(LINE);c.line(40,43,W-40,43);c.setFont('Pretendard',9);c.drawString(40,27,'2026.11.01 · 무료 체험 · 맞춤 제작 · 가상 자료 화면');c.drawRightString(W-40,27,f'{page:02d}')
     c.bookmarkPage('page'+str(page));c.addOutlineEntry(section,'page'+str(page),level=0,closed=False)
 
 for key in selected_products:
@@ -106,7 +131,7 @@ for key in selected_products:
     page=1;shell(c,key,page,'제품 소개');y=H-116;y=para(c,p['name'],40,y,size=35,bold=True);y=para(c,p['ko']+' | '+p['tag'],40,y,size=15,color=GREEN);y=para(c,p['summary'],40,y-10,size=19,bold=True)
     c.drawImage(str(SHOTS/(key+'-dash.jpg')),40,194,width=515,height=326,preserveAspectRatio=True,anchor='c',mask='auto')
     para(c,'실제 프로그램의 가상 샘플 화면입니다. 고객 실적이나 상용 전체 완성을 의미하지 않습니다.',40,166,size=12,color=MUTED)
-    para(c,'목차: 제품 소개 / 시작하기 / 화면별 사용법 / 제공 범위와 도입 안내',40,96,size=12)
+    para(c,'목차: 제품 소개 / 시작하기 / 화면별 사용법 / 도표 읽기 / 제품 연결 / 도입 안내',40,96,size=12)
     c.showPage();page+=1;shell(c,key,page,'시작하기');y=H-110;y=para(c,'처음이라면, 이 순서대로.',40,y,size=25,bold=True)
     for i,step in enumerate(p['steps'],1):y=para(c,f'{i:02d}. {step}',40,y-20,size=16,bold=True)
     y=para(c,'샘플과 회사 모드',40,y-35,size=19,bold=True)
@@ -116,7 +141,7 @@ for key in selected_products:
     c.linkURL(p['url'],(40,y,555,y+35),relative=0,thickness=0);c.showPage()
     for view,title,desc,steps in p['screens']:
         page+=1;shell(c,key,page,title);y=H-108;y=para(c,title,40,y,size=25,bold=True);para(c,desc,40,y,size=13,color=MUTED)
-        shot=SHOTS/(key+'-'+view+'.jpg');c.setFillColor(BG);c.roundRect(36,306,523,334,12,fill=1,stroke=0)
+        shot=SHOTS/(('suite-charts' if view=='suite' else key+'-'+view)+'.jpg');c.setFillColor(BG);c.roundRect(36,306,523,334,12,fill=1,stroke=0)
         c.drawImage(str(shot),40,310,width=515,height=326,preserveAspectRatio=True,anchor='c',mask='auto')
         y=282
         for i,step in enumerate(steps,1):y=para(c,f'{i:02d}  {step}',40,y,size=13)
@@ -125,10 +150,10 @@ for key in selected_products:
     page+=1;shell(c,key,page,'제공 범위와 도입 안내');y=H-112;y=para(c,'도입 전에 확인해 주세요.',40,y,size=25,bold=True)
     for item in p['limits']:y=para(c,item,40,y-15)
     y=para(c,'도입·교육·맞춤 구축',40,y-25,size=18,bold=True);y=para(c,'회사 업무와 필요한 기능을 확인한 뒤 도입 범위·기간·비용·지원 조건을 정합니다. 이 문서는 자동 결제나 계약 체결을 실행하지 않습니다.',40,y)
-    y=para(c,'제품 자료는 2026년 10월 31일 구현 범위를 기준으로 작성했습니다. 준비 중인 기능을 완료 기능으로 안내하지 않습니다.',40,y,size=11,color=MUTED)
+    y=para(c,'제품 자료는 2026년 11월 1일 구현 범위를 기준으로 작성했습니다. 준비 중인 기능을 완료 기능으로 안내하지 않습니다.',40,y,size=11,color=MUTED)
     y=para(c,'상담: ENOTE-LABS(이노트랩스) · 텔레그램 @evanlee97',40,y-20,size=13,bold=True);c.linkURL('https://t.me/evanlee97',(40,y,555,y+35),relative=0,thickness=0);c.showPage();c.save()
     assert len(PdfReader(path).pages)==len(p['screens'])+3
-    target=PUBLIC/'manuals'/path.name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(path,target);shutil.copyfile(path,PUBLIC/'manuals'/(key+'-guide-orange-20261031.pdf'))
+    target=PUBLIC/'manuals'/path.name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(path,target);shutil.copyfile(path,PUBLIC/'manuals'/(key+'-guide-charts-20261101.pdf'))
 
 # Draw the same identities for PNG favicons and social cards; rasterization is mechanical.
 for kind in (selected_products if '--product' in sys.argv else ['flownote','agencyflow','follonote','crewmemo','enote']):

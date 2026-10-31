@@ -1,34 +1,34 @@
 {
-  "capturedOn": "2026-10-31",
+  "capturedOn": "2026-11-01",
   "timezone": "Asia/Seoul",
-  "content": "Actual product UI with fictional sample records. Orange theme captured from locally built release candidates; no recoloring or synthetic redraw.",
+  "content": "Actual orange dashboard UI with chart summaries and fictional sample records; no recoloring or synthetic redraw.",
   "screens": [
     {
-      "file": "flownote-screen-orange-20261031.jpg",
+      "file": "flownote-screen-charts-20261101.jpg",
       "source": "https://flow-note-psi.vercel.app/workspace/",
       "view": "전체 업무",
       "note": "Refreshed from the public orange UI; versioned URL avoids stale green screenshots."
     },
     {
-      "file": "agencyflow-screen-orange-20261031.jpg",
+      "file": "agencyflow-screen-charts-20261101.jpg",
       "source": "https://agencyflow-studio-dun.vercel.app/workspace/",
       "view": "ProjectFlow 범용 PMS · 전체 흐름",
       "note": "Refreshed from the public orange UI; versioned URL avoids stale green screenshots."
     },
     {
-      "file": "follonote-screen-orange-20261031.jpg",
+      "file": "follonote-screen-charts-20261101.jpg",
       "source": "https://flownote-studio.vercel.app/follonote/workspace/?view=deals",
       "view": "영업 파이프라인",
       "note": "Refreshed from the public orange UI; versioned URL avoids stale green screenshots."
     },
     {
-      "file": "crewmemo-screen-orange-20261031.jpg",
+      "file": "crewmemo-screen-charts-20261101.jpg",
       "source": "https://flownote-studio.vercel.app/crewmemo/workspace/?view=approvals",
       "view": "내부 결재 · 샘플 작성자 김하린",
       "note": "Refreshed from the public orange UI; versioned URL avoids stale green screenshots."
     }
   ],
-  "captureEnvironment": "Local static production builds, 2026-10-31 KST",
+  "captureEnvironment": "Local production builds; 1280 x 720; 2026-11-01 KST",
   "hero": {
     "file": "flownote-erp-orange-20261031.jpg",
     "source": "https://flow-note-psi.vercel.app/workspace/",

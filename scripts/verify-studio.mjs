@@ -15,9 +15,9 @@ assert(
 const captures = JSON.parse(await read("studio/assets/capture-manifest.json"));
 assert.equal(captures.screens.length, 4);
 for (const kind of ["flownote", "agencyflow", "follonote", "crewmemo"]) {
-  assert(html.includes("/manuals/" + kind + "-guide-orange-20261031.pdf"));
+  assert(html.includes("/manuals/" + kind + "-guide-charts-20261101.pdf"));
   const pdf = await readFile(
-    new URL("dist/manuals/" + kind + "-guide-orange-20261031.pdf", root),
+    new URL("dist/manuals/" + kind + "-guide-charts-20261101.pdf", root),
   );
   assert.equal(pdf.toString("ascii", 0, 5), "%PDF-");
 }
@@ -86,3 +86,7 @@ assert(!html.includes('data-testid="fake"'));
 console.log(
   "Studio catalog, canonical metadata, product OG/icon assets, workspace noindex and bundled GSAP verified.",
 );
+
+assert(html.includes("KRW 200,000") && html.includes("KRW 350,000") && html.includes("KRW 500,000"));
+assert(!html.includes("Lite 월") && html.includes("1회 제작비"));
+assert((await read("dist/suite/index.html")).includes("noindex"));

@@ -45,6 +45,8 @@ await build({
   target: "es2020",
 });
 for (const dir of [
+  "suite",
+  "projectflow",
   "follonote",
   "crewmemo",
   "_next",
@@ -60,6 +62,8 @@ await copyFile(
   new URL("agencyflow/public/PretendardVariable.woff2", root),
   new URL("PretendardVariable.woff2", dist),
 );
+for (const file of ["sample-design.svg", "favicon.svg"])
+  await copyFile(new URL("agencyflow/public/" + file, root), new URL(file, dist));
 await writeFile(
   new URL("robots.txt", dist),
   "User-agent: *\nAllow: /\nSitemap: https://enote-labs.vercel.app/sitemap.xml\n",

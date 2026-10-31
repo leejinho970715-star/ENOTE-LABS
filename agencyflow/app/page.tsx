@@ -13,7 +13,7 @@ export default function Home() {
         </a>
         <nav>
           <a href="#workflow">어떻게 쓰나요?</a>
-          <a href="#pricing">요금 안내</a>
+          <a href="#pricing">무료 이용 · 맞춤 제작</a>
           <a className="button primary" href="/workspace/">
             샘플로 체험
           </a>
@@ -22,7 +22,7 @@ export default function Home() {
       <main className="public-main">
         <a
           className="button"
-          href="/manuals/agencyflow-guide-orange-20261031.pdf"
+          href="/manuals/agencyflow-guide-charts-20261101.pdf"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -119,46 +119,17 @@ export default function Home() {
           </div>
         </section>
         <section id="pricing" className="public-section">
-          <span className="eyebrow">CLEAR LIMITS. NO SURPRISES.</span>
-          <h2>팀의 규모에 맞게 시작하세요.</h2>
-          <p>
-            검증 중인 요금 제안입니다. 결제는 아직 연결되지 않았습니다. VAT
-            별도.
-          </p>
-          <div className="feature-grid">
-            {[
-              ["Lite", "9,900", "활성 프로젝트 5개 · 내부 사용자 1명 · 1GB"],
-              ["Pro", "29,000", "활성 프로젝트 20개 · 내부 사용자 3명 · 10GB"],
-              [
-                "Agency",
-                "99,000",
-                "활성 프로젝트 100개 · 내부 사용자 10명 · 50GB",
-              ],
-            ].map(([name, price, scope]) => (
-              <article key={name}>
-                <h3>{name}</h3>
-                <strong className="plan-price">월 {price}원</strong>
-                <p>{scope}</p>
-                <p>고객 검토자는 내부 사용자 수에서 제외합니다.</p>
-                <a href="/workspace/" className="button">
-                  샘플로 적합성 확인
-                </a>
-              </article>
-            ))}
-          </div>
-          <p className="muted">
-            회사 생성 시 14일 검증 체험 · 최대 100개 프로젝트·내부 10명·시안
-            1GB. 종료 후 읽기 전용으로 유지합니다. 전자서명·자동
-            청구·화이트라벨·메일 알림은 출시 전 준비 항목입니다.
-          </p>
+          <span className="eyebrow">FREE TO EXPLORE</span><h2>먼저 무료로, 우리 업무에 맞는지 확인하세요.</h2>
+          <p>구현된 프로젝트·작업·피드백·견적 기능은 월 구독료와 체험 만료 없이 이용할 수 있습니다.</p>
+          <div className="actions"><a href="/workspace/" className="button primary">무료 데모 열기</a><a href="https://enote-labs.vercel.app/#pricing" className="button">맞춤 제작 KRW 200,000~500,000 ↗</a></div>
+          <p className="muted">회사 공유는 로그인·팀 권한이 필요합니다. 활성 프로젝트 100개·내부 10명·시안 총 1GB, 파일당 5MB의 운영 한도가 있습니다. 맞춤 제작비는 부가세 별도이며 호스팅·외부 서비스 사용료는 별도입니다.</p>
         </section>
         <section className="public-section public-faq">
           <h2>도입 전에 확인하세요.</h2>
           <details>
-            <summary>고객도 유료 계정이 필요한가요?</summary>
+            <summary>고객은 어떻게 참여하나요?</summary>
             <p>
-              고객은 프로젝트에 초대된 Client 권한으로 참여하며 내부 유료 좌석
-              수에 포함되지 않습니다. 현재는 가입·이메일 확인을 마친 고객을
+              고객은 지정된 프로젝트의 Client 권한으로 무료 참여합니다. 현재는 가입·이메일 확인을 마친 고객을
               관리자가 프로젝트에 연결하는 방식입니다. 비회원 공유 링크는
               제공하지 않습니다.
             </p>
@@ -192,7 +163,7 @@ export default function Home() {
         <a className="af-brand" href="/">
           ProjectFlow
         </a>
-        <p>고객의 한마디가, 다음 작업으로.</p>
+        <p>프로젝트의 다음 일이 명확하게.</p>
         <a href="https://t.me/evanlee97">도입 문의 ↗</a>
         <a href="https://flow-note-psi.vercel.app/workspace/">
           Flownote 보고 자동화 ↗

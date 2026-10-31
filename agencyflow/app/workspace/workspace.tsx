@@ -21,7 +21,6 @@ import {
 import {
   emptyState,
   money,
-  plans,
   quoteTotal,
   estimateQuote,
   readOnly,
@@ -32,6 +31,8 @@ import {
   type Project,
   type Feedback,
 } from "../../lib/domain";
+import DataChart from "../../components/data-chart";
+import {countSeries,dueSeries} from "../../../demos/weekly-report/charts.js";
 import { stageLabels, projectSummary } from "../../lib/pms";
 
 type View =
@@ -55,7 +56,7 @@ const labels: Record<View, string> = {
   review: "자료 검토 · 피드백",
   quotes: "견적서",
   tasks: "작업 목록",
-  settings: "팀 · 요금",
+  settings: "팀 · 이용 안내",
 };
 const safeMessage = (e: unknown) =>
   e instanceof Error ? e.message : "작업을 완료하지 못했습니다.";
@@ -134,6 +135,7 @@ export default function Workspace() {
   useEffect(() => {
     const isDemo = new URLSearchParams(location.search).get("mode") !== "cloud";
     setDemo(isDemo);
+    setOrgId(new URLSearchParams(location.search).get("org") || "");
     const initialView = new URLSearchParams(location.search).get("view");
     if (initialView && initialView in labels) setView(initialView as View);
     setProjectId(new URLSearchParams(location.search).get("project") || "");
@@ -184,7 +186,7 @@ export default function Workspace() {
     try {
       if (locked)
         throw Error(
-          "체험이 종료되어 읽기 전용입니다. 데이터는 그대로 보관됩니다.",
+          "현재 회사는 조회 전용입니다. 관리자에게 이용 상태를 확인하세요.",
         );
       const p = { org_id: org?.id, project_id: project?.id, ...payload };
       if (demo) {
@@ -248,7 +250,7 @@ export default function Workspace() {
         ? await db.auth.signUp({
             ...payload,
             options: {
-              emailRedirectTo: location.origin + "/workspace/?mode=cloud",
+              emailRedirectTo: "https://agencyflow-studio-dun.vercel.app/workspace/?mode=cloud",
             },
           })
         : await db.auth.signInWithPassword(payload);
@@ -437,8 +439,9 @@ export default function Workspace() {
             ))}
         </nav>
         <div className="rail-bottom">
+          {!clientView && <a className="button" href={"https://enote-labs.vercel.app/suite/?mode="+(demo?"demo":"cloud")+"&org="+org?.id}>제품 연결 ↗</a>}
           <a
-            href="/manuals/agencyflow-guide-orange-20261031.pdf"
+            href="/manuals/agencyflow-guide-charts-20261101.pdf"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -517,8 +520,7 @@ export default function Workspace() {
           )}
           {locked && org && (
             <div className="error-message">
-              체험이 종료되어 읽기 전용입니다. 기존 자료는 보관 중이며 결제
-              연결은 준비 중입니다.
+              현재 회사는 조회 전용입니다. 관리자에게 이용 상태를 확인하세요.
             </div>
           )}
           {!demo && !session ? (
@@ -579,7 +581,7 @@ export default function Workspace() {
             <section className="panel welcome-panel">
               <h1>팀의 공간을 만드세요.</h1>
               <p>
-                새 회사는 14일 검증 체험으로 시작합니다. 고객으로 초대받았다면
+                구현된 기능은 기간 제한 없이 무료로 사용합니다. 고객으로 초대받았다면
                 새 회사를 만들지 말고 관리자에게 프로젝트 연결을 요청하세요.
               </p>
               <form onSubmit={createOrg}>
@@ -608,7 +610,7 @@ export default function Workspace() {
                         ? "고객과 일정, 현재 단계를 한눈에 확인하세요."
                         : view === "quotes"
                           ? "수량과 단가로 계산하고, 버전별로 전달·승인 기록을 남깁니다."
-                          : "팀과 고객이 같은 진행 상황을 확인하는 공간입니다."}
+                          : view === "tasks" ? "담당자와 기한을 확인하고 작업 상태를 기록하세요." : view === "settings" ? "팀 권한과 무료 이용 범위를 확인하세요." : view === "clients" ? "프로젝트에 연결할 고객과 요청 부서를 관리하세요." : "프로젝트·작업·마감 상황을 함께 확인하세요."}
                   </p>
                 </div>
                 {state.orgs.length > 1 && (
@@ -673,12 +675,12 @@ export default function Workspace() {
                         "활성 프로젝트",
                       ],
                       [
-                        "기한 초과 작업",
-                        projectTasks.filter(
+                        clientView ? "미완료 피드백" : "기한 초과 작업",
+                        (clientView ? state.feedbacks.filter(f=>projects.some(p=>p.id===f.project_id)&&f.status!=='완료') : projectTasks.filter(
                           (t) =>
                             t.status !== "완료" && t.due_on && t.due_on < today,
-                        ).length + "개",
-                        "미완료 작업 기준",
+                        )).length + "개",
+                        clientView ? "접근 가능한 자료 기준" : "미완료 작업 기준",
                       ],
                       [
                         "완료 프로젝트",
@@ -699,6 +701,12 @@ export default function Workspace() {
                         <small>{d}</small>
                       </article>
                     ))}
+                  </div>
+                  <div className="chart-grid">
+                    <DataChart title="프로젝트 단계 분포" series={countSeries(projects,'stage',stages,stageLabels)} unit="개" note="현재 회사의 접근 가능한 활성 프로젝트 · 현재 단계 기준" />
+                    <DataChart title="프로젝트 일정 현황" series={dueSeries(projects,'due_on',today,p=>['완료','유지보수'].includes(p.stage))} unit="개" note="한국 날짜·종료 예정일 기준 · 완료·운영 단계는 종료로 분류" />
+                    {!clientView && <DataChart title="등록 작업 상태" series={countSeries(projectTasks,'status',['대기','진행중','완료'])} kind="donut" unit="개" note="현재 회사의 활성 프로젝트 작업 · 완료 상태를 직접 기록한 결과" />}
+                    <DataChart title="고객 피드백 상태" series={countSeries(state.feedbacks.filter(f=>projects.some(p=>p.id===f.project_id)),'status',['대기','작업중','완료'])} kind="donut" note="접근 가능한 활성 프로젝트의 모든 자료 버전 · 직접 기록한 처리 상태" />
                   </div>
                   <div className="dashboard-grid">
                     <section className="panel">
@@ -900,6 +908,10 @@ export default function Workspace() {
                     </div>
                     {!clientView && (
                       <>
+                        <div className="chart-grid">
+                          <DataChart title="선택 프로젝트 작업 상태" series={countSeries(projectTasks.filter(t=>t.project_id===project.id),'status',['대기','진행중','완료'])} kind="donut" unit="개" note="선택 프로젝트의 등록 작업 · 납품·고객 승인과 별개" />
+                          <DataChart title="선택 프로젝트 작업 기한" series={dueSeries(projectTasks.filter(t=>t.project_id===project.id),'due_on',today)} unit="개" note="한국 날짜 기준 · 완료 작업은 별도 분류" />
+                        </div>
                         <h3>등록 작업 기준 진행률</h3>
                         <p>
                           {summary.percent === null
@@ -1006,6 +1018,10 @@ export default function Workspace() {
                       검색 조건에 맞는 프로젝트가 없습니다.
                     </p>
                   )}
+                  <div className="chart-grid">
+                    <DataChart title="검색 결과의 단계 분포" series={countSeries(filteredProjects,'stage',stages,stageLabels)} unit="개" note="아래 보드와 같은 검색·권한 범위" />
+                    <DataChart title="검색 결과의 일정 현황" series={dueSeries(filteredProjects,'due_on',today,p=>['완료','유지보수'].includes(p.stage))} unit="개" note="등록 종료 예정일 기준 · 실제 납품 확인과 구분" />
+                  </div>
                   <div className="kanban-board">
                     {stages.map((stage) => (
                       <section className="kanban-column" key={stage}>
@@ -1258,6 +1274,7 @@ export default function Workspace() {
                         )}
                       </section>
                       <aside className="panel feedback-panel">
+                        <DataChart title="이 버전의 피드백 상태" series={countSeries(feedbacks,'status',['대기','작업중','완료'])} kind="donut" note="선택한 자료 버전 전체 · 아래 목록의 필터와 별도 집계" />
                         <div className="section-heading">
                           <h2>피드백 {feedbacks.length}</h2>
                           <select
@@ -1657,6 +1674,7 @@ export default function Workspace() {
                           </button>
                         )}
                       </div>
+                      <div className="quote-chart-summary"><DataChart title="견적 버전별 총액" series={quotes.map(q=>({label:'v'+q.number,value:q.total}))} unit="원" note="선택 프로젝트의 접근 가능한 견적 · VAT 포함 · 버전 간 비교이며 합산 매출이 아닙니다." /></div>
                       {quote ? (
                         <>
                           <div className="quote-document">
@@ -1785,6 +1803,10 @@ export default function Workspace() {
                       <option value="all">전체 프로젝트</option>
                     </select>
                   </label>
+                  <div className="chart-grid">
+                    <DataChart title="조회 범위의 작업 상태" series={countSeries(projectTasks.filter(t=>taskScope==='all'||t.project_id===project?.id),'status',['대기','진행중','완료'])} kind="donut" unit="개" note="선택한 작업 범위와 같은 자료 · 등록 상태 기준" />
+                    <DataChart title="조회 범위의 작업 기한" series={dueSeries(projectTasks.filter(t=>taskScope==='all'||t.project_id===project?.id),'due_on',today)} unit="개" note="한국 날짜 기준 · 미정 날짜와 완료 작업을 구분" />
+                  </div>
                   <div className="task-columns">
                     {["대기", "진행중", "완료"].map((status) => (
                       <section className="panel" key={status}>
@@ -1904,38 +1926,11 @@ export default function Workspace() {
                     )}
                   </section>
                   <section className="panel">
-                    <span className="eyebrow">BILLING STATUS</span>
-                    <h2>
-                      {org.subscription_status === "trialing"
-                        ? "14일 검증 체험"
-                        : "구독 상태"}{" "}
-                      ·{" "}
-                      {new Date(org.trial_ends_at).toLocaleDateString("ko-KR")}
-                      까지
-                    </h2>
-                    <p>
-                      현재 {org.plan.toUpperCase()} 범위 · 체험 저장공간 1GB ·
-                      만료 시 읽기 전용. 결제·정기 청구·취소·실패 처리·자동
-                      메일은 연결 전입니다.
-                    </p>
-                    <div className="plan-grid">
-                      {Object.entries(plans).map(([key, plan]) => (
-                        <article className="plan-box" key={key}>
-                          <h3>{plan.label}</h3>
-                          <strong>{money(plan.price)} / 월</strong>
-                          <p>
-                            활성 프로젝트 {plan.projects}개<br />
-                            내부 {plan.seats}명 · {plan.storage}
-                          </p>
-                          <button disabled>결제 준비 중</button>
-                        </article>
-                      ))}
-                    </div>
-                    <p className="muted">
-                      표시 가격은 VAT 별도 검증 가설입니다. 토스 자동결제
-                      심사·테스트 키·서버 키·검증된 웹훅·갱신 작업이 갖춰지기
-                      전에는 결제나 유료 활성화를 실행하지 않습니다.
-                    </p>
+                    <span className="eyebrow">FREE ACCESS</span>
+                    <h2>무료 이용 · 구현된 기능 전체</h2>
+                    <p>월 구독료 없이 사용할 수 있습니다. 회사별 권한과 자료 보관 기준은 유지합니다.</p>
+                    <p className="muted">운영 한도: 활성 프로젝트 100개 · 내부 구성원 10명 · 시안 저장 총 1GB · 파일당 5MB. 확장이 필요하면 맞춤 구축으로 상담하세요.</p>
+                    <a className="button primary" href="https://enote-labs.vercel.app/#pricing" target="_blank" rel="noreferrer">맞춤 제작비 보기 ↗</a>
                   </section>
                   {demo && (
                     <section className="panel">

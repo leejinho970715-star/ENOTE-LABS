@@ -1,4 +1,4 @@
-const names={pilot:'Flownote 2주 유료 파일럿 · 제안 기준 19만 9천 원',setup:'Flownote 표준 설정 · 제안 기준 총 59만 원',care:'선택 유지관리 · 제안 기준 월 5만 원',custom:'맞춤 ERP·PMS·CRM 구축 · 범위 확인 후 견적'};
+const names={pilot:'화면·양식 맞춤 · KRW 200,000',setup:'작은 업무 흐름 구축 · KRW 350,000',care:'업무 연결 맞춤 · KRW 500,000',custom:'맞춤 제작 · KRW 200,000~500,000 · 범위 협의'};
 const form=document.querySelector('#brief-form'),output=document.querySelector('#brief-text'),result=document.querySelector('#brief-result'),status=document.querySelector('#brief-status');
 function invalidateDraft(){const existed=!result.hidden;result.hidden=true;output.value='';if(existed)status.textContent='내용이 바뀌었습니다. 문의 초안을 다시 만들어 주세요.';}
 document.querySelectorAll('[data-package]').forEach(link=>link.addEventListener('click',()=>{if(form.elements.package.value!==link.dataset.package)invalidateDraft();form.elements.package.value=link.dataset.package;}));

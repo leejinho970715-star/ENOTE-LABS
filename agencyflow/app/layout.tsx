@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "../../demos/weekly-report/charts.css";
+import "../../demos/weekly-report/controls.css";
 const origin =
   process.env.NEXT_PUBLIC_AGENCY_URL ||
   "https://agencyflow-studio-dun.vercel.app";

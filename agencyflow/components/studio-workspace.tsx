@@ -6,6 +6,8 @@ import {
   useRef,
   type FormEvent,
 } from "react";
+import DataChart from "./data-chart";
+import {countSeries,sumSeries,dueSeries,daySeries,dayKey} from "../../demos/weekly-report/charts.js";
 import { db } from "../lib/data";
 import { money, readOnly, type Org } from "../lib/domain";
 import {
@@ -157,6 +159,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
     const initialDemo =
       new URLSearchParams(location.search).get("mode") !== "cloud";
     setDemo(initialDemo);
+    setOrgId(new URLSearchParams(location.search).get("org") || "");
     if (initialDemo) {
       try {
         setData(
@@ -203,10 +206,13 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
     setError("");
     setNotice("");
     try {
-      if (locked) throw Error("체험이 종료되어 조회만 가능합니다.");
+      if (locked) throw Error("현재 회사는 조회 전용입니다.");
       if (demo) {
         const next = studioDemoCommand(data, action, p, actor);
         localStorage.setItem(cache, JSON.stringify(next));
+        if(kind==='crewmemo' && action==='team_task_status'){
+          const raw=localStorage.getItem('agencyflow-demo-v1');if(raw){const pms=JSON.parse(raw);for(const t of next.team_tasks){if(t.project_task_id){const source=pms.tasks.find((x:any)=>x.id===t.project_task_id&&x.org_id===t.org_id);if(source)source.status=t.status;}}localStorage.setItem('agencyflow-demo-v1',JSON.stringify(pms));}
+        }
         setData(next);
       } else {
         const { error } =
@@ -377,8 +383,9 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
           ))}
         </nav>
         <div className="rail-bottom">
+          <a className="button" href={"https://enote-labs.vercel.app/suite/?mode="+(demo?"demo":"cloud")+"&org="+org?.id}>제품 연결 ↗</a>
           <a
-            href={"/manuals/" + kind + "-guide-orange-20261031.pdf"}
+            href={"/manuals/" + kind + "-guide-charts-20261101.pdf"}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -462,7 +469,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
           )}
           {locked && org && (
             <p className="error-message">
-              체험이 종료되어 읽기 전용입니다. 기존 자료는 보관됩니다.
+              현재 회사는 조회 전용입니다. 관리자에게 이용 상태를 확인하세요.
             </p>
           )}
           {!demo && !session ? (
@@ -509,7 +516,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
               <h1>회사의 업무 공간을 만드세요.</h1>
               <p>
                 기존 회사의 팀원이라면 관리자에게 가입한 계정의 연결을
-                요청하세요. 새 회사는 공통 14일 검증 체험으로 시작합니다.
+                요청하세요. 구현된 기능은 기간 제한 없이 무료로 이용합니다.
               </p>
               <form onSubmit={createCompany}>
                 <Field name="name" label="회사명" />
@@ -536,11 +543,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
                       ? info.title
                       : nav.find(([key]) => key === view)?.[1]}
                   </h1>
-                  <p>
-                    {crm
-                      ? "고객과 대화의 맥락을 남기고, 다음 행동을 정하세요."
-                      : "팀이 함께 알아야 할 소식과 결정, 해야 할 일을 확인하세요."}
-                  </p>
+                  {view==='dash' && <p>{crm ? "고객 정보와 다음 연락을 한곳에서 확인하세요." : "팀 일정·결재·담당 업무를 함께 확인하세요."}</p>}
                 </div>
                 {!demo && orgs.length > 1 && (
                   <label>
@@ -634,6 +637,15 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
                       </article>
                     ))}
                   </div>
+                  <div className="chart-grid">
+                    {crm ? <>
+                      <DataChart title="영업기회 단계 분포" series={countSeries(deals,'stage',dealStages)} note="현재 회사의 보관하지 않은 기회 · 수주는 직접 입력한 영업 상태" />
+                      <DataChart title="단계별 입력 기회 금액" series={sumSeries(deals,'stage','amount',dealStages)} unit="원" note="입력 금액 합계 · 확정 매출·수금·이익이나 매출 예측이 아닙니다." />
+                    </> : <>
+                      <DataChart title="팀 업무 상태" series={countSeries(tasks,'status',['대기','진행중','완료'])} kind="donut" unit="개" note="현재 회사의 등록 팀 업무 · 실제 근무 시간과 구분" />
+                      <DataChart title="내부 결재 현황" series={countSeries(approvals,'status',['대기','승인','반려','취소'])} note="조회 가능한 회사 문서 · 승인이 실제 지급을 실행하지 않습니다." />
+                    </>}
+                  </div>
                   <div className="dashboard-grid">
                     <section className="panel">
                       <div className="section-heading">
@@ -693,17 +705,9 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
                         ))}
                     </section>
                     <section className="panel">
-                      <h2>{crm ? "단계별 영업기회" : "다가오는 일정"}</h2>
+                      {!crm && <h2>다가오는 일정</h2>}
                       {crm
-                        ? dealStages.map((stage) => (
-                            <div className="studio-stage-total" key={stage}>
-                              <span>{stage}</span>
-                              <b>
-                                {deals.filter((d) => d.stage === stage).length}
-                                건
-                              </b>
-                            </div>
-                          ))
+                        ? <DataChart title="고객 유입 경로" series={countSeries(contacts,'source')} unit="곳" note="등록 고객의 유입 경로 · 실제 전환 성과와 구분" />
                         : events
                             .slice()
                             .sort((a, b) =>
@@ -760,6 +764,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
               )}
               {crm && view === "contacts" && (
                 <>
+                  <div className="chart-grid"><DataChart title="고객 유입 경로" series={countSeries(contacts,'source')} unit="곳" note="현재 회사의 활성 고객 전체 · 검색 전 등록 자료 · 전환율이 아닙니다." /></div>
                   <div className="section-heading">
                     <label className="studio-search">
                       고객 검색
@@ -899,6 +904,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
               )}
               {crm && view === "deals" && (
                 <>
+                  <div className="chart-grid"><DataChart title="영업기회 단계 분포" series={countSeries(deals,'stage',dealStages)} note="현재 회사의 보관하지 않은 영업기회" /><DataChart title="단계별 입력 기회 금액" series={sumSeries(deals,'stage','amount',dealStages)} unit="원" note="입력 금액 합계 · 매출·수금·이익·매출 예측과 구분" /></div>
                   <div className="section-heading">
                     <h2>신규에서 수주까지</h2>
                     <button
@@ -982,6 +988,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
               )}
               {crm && view === "followups" && (
                 <section className="panel">
+                  <div className="chart-grid"><DataChart title="후속 연락 처리 상태" series={countSeries(followups,'status',['예정','완료'])} kind="donut" note="등록 연락 전체 · 연락 완료는 사용자가 직접 기록" /><DataChart title="후속 연락 일정 분포" series={dueSeries(followups,'due_on',dayKey(new Date().toISOString()))} note="한국 날짜 기준 · 날짜 미정과 완료 연락을 구분" /></div>
                   <div className="section-heading">
                     <h2>후속 연락 일정</h2>
                     <button
@@ -1060,6 +1067,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
               )}
               {!crm && view === "calendar" && (
                 <section className="panel">
+                  <div className="chart-grid"><DataChart title="앞으로 7일의 팀 일정" series={daySeries(events,'starts_at',dayKey(new Date().toISOString()))} kind="columns" unit="개" note="한국 시간의 시작일 기준 · 오늘 포함 7일 · 참석·실행 여부가 아닙니다." /></div>
                   <div className="section-heading">
                     <h2>함께 확인하는 팀 일정</h2>
                     <button
@@ -1113,6 +1121,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
               )}
               {!crm && view === "approvals" && (
                 <>
+                  <div className="chart-grid"><DataChart title="내부 결재 처리 상태" series={countSeries(approvals,'status',['대기','승인','반려','취소'])} kind="donut" note="현재 조회 가능한 회사 문서 · 실제 지급·전자서명과 별개" /></div>
                   <div className="section-heading">
                     <h2>확인한 결정을 기록으로</h2>
                     <button
@@ -1200,6 +1209,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
               )}
               {!crm && view === "tasks" && (
                 <>
+                  <div className="chart-grid"><DataChart title="팀 업무 처리 상태" series={countSeries(tasks,'status',['대기','진행중','완료'])} kind="donut" unit="개" note="현재 회사의 등록 업무 · 직접 기록한 상태 기준" /><DataChart title="팀 업무 일정" series={dueSeries(tasks,'due_on',dayKey(new Date().toISOString()))} unit="개" note="한국 날짜 기준 · 미정 날짜와 완료 업무를 별도 분류" /></div>
                   <div className="section-heading">
                     <h2>담당자와 마감이 명확한 업무</h2>
                     <button

@@ -1946,3 +1946,5 @@ th {
   padding: 8px 12px;
   background: var(--surface);
 }
+
+.suite-page.app-shell{display:block;max-width:1400px;margin:auto;padding:28px 24px 70px}.suite-header{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:44px}.suite-page main>h1{margin:12px 0 16px}.suite-page main>p{margin-bottom:22px}.suite-forms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin:28px 0}.suite-forms .panel{min-width:0}.suite-forms h2{margin-bottom:20px}.suite-forms form+form{margin-top:24px;padding-top:24px;border-top:1px solid var(--border)}.suite-product-links{margin:24px 0}.suite-page .panel{margin-bottom:18px}.suite-page .table-scroll{overflow-x:auto}.suite-page table{width:100%;border-collapse:collapse}.suite-page th,.suite-page td{padding:12px;border-bottom:1px solid var(--border);text-align:left;font-size:14px;overflow-wrap:anywhere}@media(max-width:760px){.suite-forms{grid-template-columns:minmax(0,1fr);gap:16px}.suite-page.app-shell{padding:24px 16px}.suite-header{margin-bottom:28px}.suite-page h1{font-size:28px}}

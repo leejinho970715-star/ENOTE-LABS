@@ -7,8 +7,8 @@ import {randomBytes,createHmac,timingSafeEqual} from 'node:crypto';
 import {WorkspaceStore} from './workspace-store.mjs';
 import {escapeHTML,reportHTML,exportReportCSV} from './core.js';
 const root=fileURLToPath(new URL('.',import.meta.url));
-const allowed=new Set(['index.html','app.js','core.js','style.css','help.js','fixtures/sample.csv','fixtures/workspace-sample.csv','fixtures/workspace-next-week.csv','workspace.html','workspace.js','workspace.css','assets/brandmark.png','assets/favicon-32.png','assets/favicon.ico','assets/apple-touch-icon.png','assets/og-image.jpg','assets/PretendardVariable.woff2','assets/Pretendard-LICENSE.txt']);
-const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.csv':'text/csv; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.ico':'image/x-icon','.woff2':'font/woff2','.txt':'text/plain; charset=utf-8'};
+const allowed=new Set(['controls.css','charts.js','charts.css','assets/flownote-logo.svg','index.html','app.js','core.js','style.css','help.js','fixtures/sample.csv','fixtures/workspace-sample.csv','fixtures/workspace-next-week.csv','workspace.html','workspace.js','workspace.css','assets/brandmark.png','assets/favicon-32.png','assets/favicon.ico','assets/apple-touch-icon.png','assets/og-image.jpg','assets/PretendardVariable.woff2','assets/Pretendard-LICENSE.txt']);
+const types={'.svg':'image/svg+xml','.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.csv':'text/csv; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.ico':'image/x-icon','.woff2':'font/woff2','.txt':'text/plain; charset=utf-8'};
 const security={'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"};
 export function createReportServer(store){
 const attempts=new Map();

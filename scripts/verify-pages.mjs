@@ -25,8 +25,9 @@ for(const [file,width,height] of [['og-flownote.png',1200,630],['favicon-32.png'
 }
 assert(html.includes('marketing/favicon.svg')&&html.includes('marketing/favicon.ico'));
 
-assert(html.includes('19만 9천')&&html.includes('총 59만')&&html.includes('월 5만'));
-assert(html.includes('유지관리는 서버 이용권'));
+assert(html.includes('KRW 200,000')&&html.includes('KRW 350,000')&&html.includes('KRW 500,000'));
+assert(!html.includes('월 5만')&&!html.includes('총 59만'));
+assert(html.includes('월 구독료가 아닌 1회 맞춤 제작비'));
 assert(html.includes('자동 전송·접수되지 않습니다.'));
 assert(!/__BASE__|__SCHEMA__|__FAQ_HTML__|__CANONICAL__|__IMAGE_URL__/.test(html));
 const schema=JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);

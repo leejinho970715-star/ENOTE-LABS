@@ -1,0 +1,46 @@
+-- Integration verification only. All synthetic users and business records roll back.
+begin;
+do $$
+declare u uuid:=gen_random_uuid(); other_user uuid:=gen_random_uuid();o uuid;o2 uuid;c uuid;contact uuid;deal uuid;project uuid;task uuid;crew uuid;a uuid;obj jsonb;blocked boolean:=false;
+begin
+ insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values(u,'suite-check-'||u||'@example.invalid',now(),'{}'),(other_user,'suite-check-'||other_user||'@example.invalid',now(),'{}');
+ perform set_config('request.jwt.claim.sub',u::text,true);
+ obj:=public.agencyflow_command('create_org',jsonb_build_object('name','Suite verification'));o:=(obj->>'id')::uuid;
+ update public.af_orgs set trial_ends_at=now()-interval '1 day' where id=o;
+ if not af_private.writable(o) then raise exception 'FREE entitlement failed';end if;
+ obj:=public.flownote_command('create_company',jsonb_build_object('name','Suite verification'));c:=(obj->>'company_id')::uuid;
+ perform public.suite_command('connect_company',jsonb_build_object('org_id',o,'company_id',c));
+ obj:=public.studio_command('save_contact',jsonb_build_object('org_id',o,'name','Test customer','contact','Test'));contact:=(obj->>'id')::uuid;
+ obj:=public.suite_command('customer_from_crm',jsonb_build_object('org_id',o,'contact_id',contact));a:=(obj->>'client_id')::uuid;
+ perform public.suite_command('customer_from_crm',jsonb_build_object('org_id',o,'contact_id',contact));
+ if (select count(*) from public.af_clients where org_id=o)<>1 then raise exception 'Customer duplicate';end if;
+ perform public.suite_command('customer_to_flownote',jsonb_build_object('org_id',o,'client_id',a,'csv_client_id','C01'));
+ obj:=public.studio_command('save_deal',jsonb_build_object('org_id',o,'contact_id',contact,'title','Test delivery','amount',500000,'due_on','2026-11-10','stage','신규'));deal:=(obj->>'id')::uuid;
+ begin perform public.suite_command('project_from_deal',jsonb_build_object('org_id',o,'deal_id',deal,'starts_on','2026-11-01','due_on','2026-11-10'));exception when others then blocked:=true;end;
+ if not blocked then raise exception 'Unwon opportunity accepted';end if;
+ perform public.studio_command('deal_stage',jsonb_build_object('org_id',o,'id',deal,'stage','수주'));
+ obj:=public.suite_command('project_from_deal',jsonb_build_object('org_id',o,'deal_id',deal,'starts_on','2026-11-01','due_on','2026-11-10'));project:=(obj->>'project_id')::uuid;
+ perform public.suite_command('project_from_deal',jsonb_build_object('org_id',o,'deal_id',deal,'starts_on','2026-11-01','due_on','2026-11-10'));
+ if (select count(*) from public.af_projects where org_id=o)<>1 or (select amount from public.af_projects where id=project)<>0 then raise exception 'Project duplicate or false revenue';end if;
+ perform public.suite_command('project_to_flownote',jsonb_build_object('org_id',o,'project_id',project,'campaigns',jsonb_build_array('Campaign A')));
+ if not exists(select 1 from public.suite_projects where project_id=project and flownote_project_id is not null) then raise exception 'Report project missing';end if;
+ obj:=public.agencyflow_command('task',jsonb_build_object('org_id',o,'project_id',project,'title','Delivery check','due_on','2026-11-08','priority','보통'));task:=(obj->>'id')::uuid;
+ obj:=public.suite_command('task_to_crew',jsonb_build_object('org_id',o,'task_id',task,'assignee_id',u));crew:=(obj->>'crew_task_id')::uuid;
+ perform public.suite_command('task_to_crew',jsonb_build_object('org_id',o,'task_id',task,'assignee_id',u));
+ if (select count(*) from public.studio_team_tasks where org_id=o)<>1 then raise exception 'Task duplicate';end if;
+ perform public.studio_command('team_task_status',jsonb_build_object('org_id',o,'id',crew,'status','완료'));
+ if (select status from public.af_tasks where id=task)<>'완료' then raise exception 'Crew to PMS sync failed';end if;
+ perform public.agencyflow_command('task_status',jsonb_build_object('org_id',o,'project_id',project,'id',task,'status','진행중'));
+ if (select status from public.studio_team_tasks where id=crew)<>'진행중' then raise exception 'PMS to Crew sync failed';end if;
+ perform set_config('request.jwt.claim.sub',other_user::text,true);
+ obj:=public.agencyflow_command('create_org',jsonb_build_object('name','Other verification'));o2:=(obj->>'id')::uuid;
+ blocked:=false;begin perform public.suite_command('customer_from_crm',jsonb_build_object('org_id',o2,'contact_id',contact));exception when others then blocked:=true;end;
+ if not blocked then raise exception 'Cross company source accepted';end if;
+ blocked:=false;begin perform public.suite_command('connect_company',jsonb_build_object('org_id',o2,'company_id',c));exception when others then blocked:=true;end;
+ if not blocked then raise exception 'Unauthorized Flownote link accepted';end if;
+ execute 'set local role authenticated';
+ if exists(select 1 from public.suite_customers where org_id=o) then raise exception 'Cross company RLS leak';end if;
+ execute 'reset role';
+end$$;
+rollback;
+select 'PASS: free expiry, four-product handoffs, idempotency, bidirectional task status, isolation and rollback' as result;

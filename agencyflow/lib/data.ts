@@ -35,6 +35,7 @@ export function sample(): State {
         name: "스튜디오 모노 · 샘플",
         role: "admin",
         plan: "agency",
+        free_access: true,
         subscription_status: "trialing",
         trial_ends_at: new Date(Date.now() + 14 * 86400000).toISOString(),
       },
@@ -175,13 +176,14 @@ export function sample(): State {
 export function loadDemo(): State {
   try {
     const raw = localStorage.getItem("agencyflow-demo-v1");
-    return raw ? JSON.parse(raw) : sample();
+    const parsed = raw ? JSON.parse(raw) : sample(); parsed.orgs.forEach((o:Org)=>o.free_access=true); return parsed;
   } catch {
     return sample();
   }
 }
 export function saveDemo(state: State) {
   localStorage.setItem("agencyflow-demo-v1", JSON.stringify(state));
+  const raw=localStorage.getItem('studio-crewmemo-demo-v1');if(raw){const crew=JSON.parse(raw);for(const t of crew.team_tasks){if(t.project_task_id){const source=state.tasks.find((x:any)=>x.id===t.project_task_id&&x.org_id===t.org_id);if(source)t.status=source.status;}}localStorage.setItem('studio-crewmemo-demo-v1',JSON.stringify(crew));}
 }
 export async function cloudState(): Promise<State> {
   const names = [
@@ -243,7 +245,7 @@ export function demoCommand(
   const s = structuredClone(state),
     org = s.orgs.find((x) => x.id === p.org_id);
   if (action !== "create_org" && readOnly(org))
-    throw Error("체험이 종료되어 읽기 전용입니다.");
+    throw Error("현재 회사는 조회 전용입니다.");
   const internal = role !== "client";
   if (
     !internal &&
