@@ -2104,6 +2104,22 @@ a:focus-visible {
 }
 
 /* Policies: fixed header and independently scrollable body, including mobile. */
+.screen-preview{display:block;cursor:zoom-in;border-radius:0;line-height:0}
+html.screen-modal-open,html.screen-modal-open body{overflow:hidden}
+.screen-dialog{width:min(1360px,calc(100% - 48px));max-width:none;max-height:calc(100vh - 48px);max-height:calc(100dvh - 48px);padding:0;border:1px solid #6a5140;border-radius:20px;background:#27231f;color:#fff;overflow:hidden;box-shadow:0 24px 96px #0006}
+.screen-dialog[open]{display:flex;flex-direction:column}
+.screen-dialog::backdrop{background:#1d1712d9;backdrop-filter:blur(5px)}
+.screen-dialog>header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-shrink:0;padding:18px 24px}
+.screen-dialog h2{font-size:clamp(18px,3vw,24px);color:#fff}
+.screen-dialog button{border:1px solid #bd7544;border-radius:10px;background:#bc501b;color:#fff;min-height:44px;padding:10px 16px;font-size:16px}
+.screen-dialog [data-screen-close]{flex-shrink:0}
+.screen-dialog-body{min-height:0;overflow:auto;overscroll-behavior:contain;padding:0 12px}
+.screen-dialog .screen-image-close{display:block;width:100%;padding:0;border:0;border-radius:8px;line-height:0;background:#fff;cursor:zoom-out;overflow:hidden}
+.screen-dialog img{display:block;width:100%;height:auto;max-width:100%;object-fit:contain}
+.screen-dialog img[hidden]{display:none}
+.screen-dialog p{font-size:14px;padding:16px 24px;color:#f9d9c3}
+.screen-dialog button:focus-visible,.screen-preview:focus-visible{outline:3px solid #ffb879;outline-offset:3px}
+@media(max-width:600px){.screen-dialog{width:calc(100% - 24px);max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);border-radius:14px}.screen-dialog>header{padding:14px;gap:12px}.screen-dialog button{padding:10px 12px}.screen-dialog p{padding:14px}.screen-dialog-body{padding:0 8px}}
 .footer .footer-legal,.footer-legal{display:flex;flex-wrap:wrap;gap:12px;margin-block:24px}
 .legal-trigger,.legal-close,.legal-back{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 16px;border:1px solid #dbc9ba;border-radius:10px;background:#fff;color:#553a29;font:inherit;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
 .privacy-trigger{font-weight:750}
