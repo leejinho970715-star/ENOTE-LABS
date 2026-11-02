@@ -1,3 +1,4 @@
+import {demoCacheKey} from "./access-scope";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import config from "../../supabase/public-config.json";
 import {
@@ -20,6 +21,9 @@ export const db: SupabaseClient = createClient(
     },
   },
 );
+let demoIdentity='';
+export function configureDemoIdentity(id:string){demoIdentity=id;}
+export function demoStorageKey(key:string){return demoCacheKey(key,demoIdentity);}
 const stamp = () => new Date().toISOString(),
   id = () => crypto.randomUUID();
 export function sample(): State {
@@ -175,15 +179,15 @@ export function sample(): State {
 }
 export function loadDemo(): State {
   try {
-    const raw = localStorage.getItem("agencyflow-demo-v1");
+    const raw = localStorage.getItem(demoStorageKey("agencyflow-demo-v1"));
     const parsed = raw ? JSON.parse(raw) : sample(); parsed.orgs.forEach((o:Org)=>o.free_access=true); return parsed;
   } catch {
     return sample();
   }
 }
 export function saveDemo(state: State) {
-  localStorage.setItem("agencyflow-demo-v1", JSON.stringify(state));
-  const raw=localStorage.getItem('studio-crewmemo-demo-v1');if(raw){const crew=JSON.parse(raw);for(const t of crew.team_tasks){if(t.project_task_id){const source=state.tasks.find((x:any)=>x.id===t.project_task_id&&x.org_id===t.org_id);if(source)t.status=source.status;}}localStorage.setItem('studio-crewmemo-demo-v1',JSON.stringify(crew));}
+  localStorage.setItem(demoStorageKey("agencyflow-demo-v1"), JSON.stringify(state));
+  const raw=localStorage.getItem(demoStorageKey('studio-crewmemo-demo-v1'));if(raw){const crew=JSON.parse(raw);for(const t of crew.team_tasks){if(t.project_task_id){const source=state.tasks.find((x:any)=>x.id===t.project_task_id&&x.org_id===t.org_id);if(source)t.status=source.status;}}localStorage.setItem(demoStorageKey('studio-crewmemo-demo-v1'),JSON.stringify(crew));}
 }
 export async function cloudState(): Promise<State> {
   const names = [

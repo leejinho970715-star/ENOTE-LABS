@@ -3,7 +3,7 @@ import {readFile,readdir,stat} from 'node:fs/promises';
 import {base,origin} from './site-config.mjs';
 const root=new URL('../dist/',import.meta.url);
 const read=file=>readFile(new URL(file,root),'utf8');
-const html=await read('index.html'),app=await read('workspace.js');
+const html=await read('index.html'),app=await read('workspace-app.js');
 const workspace=await read('workspace/index.html');
 assert(!app.includes("fetch('/api/"),'Pages must never call local workspace APIs');
 assert(app.includes('공개 체험판 · 아래 보고서와 승인 상태는 가상 예시입니다.'));
@@ -12,7 +12,7 @@ assert(!app.includes('href="/workspace"'));
 assert(!html.includes('__FLOWNOTE_ORIGIN__'));
 assert(workspace.includes(origin+base+'assets/og-image.jpg'));
 assert(workspace.includes(origin+base+'workspace/'));
-assert((await read('app.js')).includes(`href="${base}workspace/"`));
+assert((await read('csv-app.js')).includes(`href="${base}workspace/"`));
 assert.equal((html.match(/<h1\b/g)||[]).length,1);
 assert(html.includes('rel="canonical" href="'+origin+base+'"'));
 assert(html.includes('https://t.me/evanlee97'));
@@ -66,3 +66,6 @@ async function inspect(dir=''){
 }
 await inspect();
 console.log('Pages verification passed: project base paths, public-only assets, synthetic records, download isolation, no API/auth secrets.');
+
+for(const entry of ['workspace.js','app.js'])assert((await read(entry)).includes('if(await requireProductLogin('),'Product must authenticate before loading its application');
+assert(workspace.includes('auth-pending'));assert((await read('csv.html')).includes('auth-pending'));

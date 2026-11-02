@@ -33,3 +33,5 @@ meter::-moz-meter-bar{background:#c4541b}
   :is(.app-shell,#workspace-app,.account-page,.report-demo) :is(input:not([type=checkbox],[type=radio]),select,textarea){font-size:16px;min-width:0;max-width:100%}
   :is(.app-shell,#workspace-app,.account-page,.report-demo) :is(.actions,.detail-actions){align-items:stretch;gap:12px}
 }
+
+body.auth-pending>:not(#product-access):not(noscript){display:none!important}#product-access{max-width:650px;margin:auto;padding:40px 20px;min-height:100dvh}#product-access h1{font-size:30px}#product-access form{display:grid;gap:16px;margin:24px 0}#product-access .actions{display:flex;gap:12px;flex-wrap:wrap}#product-access input{font-size:16px}

@@ -23,9 +23,10 @@ const topics:Record<GuideProduct,GuideTopic[]>={
 };
 export function guideTopics(product:GuideProduct,internal=true):GuideTopic[]{
  return [...topics[product].filter(t=>internal||!t.internal),
+  ...(internal?[{id:'planner',title:'운영 플래너와 월간 일정·파일 내보내기',keywords:['플래너','월간','ics','내보내기','검색조건','기한초과'],view:'planner',internal:true,steps:['운영 플래너에서 제목·상태·담당자·마감 범위로 조회하세요.','월간 일정으로 바꾸면 등록 날짜를 달력 또는 모바일 일정 목록으로 볼 수 있습니다.','현재 조회 CSV와 캘린더 파일(.ics)은 조회 범위의 일회성 파일입니다. 외부 캘린더와 자동 동기화하거나 알림을 보내지는 않습니다.']}]:[]),
   {id:'charts',title:'도표와 수치표 읽기',keywords:['도표','차트','수치','통계','그래프','0건','집계'],view:product==='projectflow'?'overview':'dash',steps:['도표 제목 아래의 집계 범위와 기준을 먼저 확인하세요.','수치표 보기를 열면 정확한 숫자를 읽을 수 있습니다. 등록 자료가 없는 상태와 0을 구분합니다.','금액 도표는 입력된 금액을 집계합니다. 미입력·형식 오류 금액은 합계에서 제외합니다.']},
   {id:'connection',title:'네 제품의 데이터 연결',keywords:['연결','연계','동기화','다른제품','flownote','crm','pms'],href:'https://enote-labs.vercel.app/suite/',steps:['제품 연결에서 같은 회사의 CRM 고객·프로젝트 고객을 선택해 재사용합니다.','수주 기회를 프로젝트로, 프로젝트 작업을 Crewmemo로 연결할 수 있습니다.','Flownote 회사 연결은 양쪽 대표 관리자 권한이 필요합니다. 회사별 접근 권한은 그대로 유지됩니다.']},
-  {id:'free',title:'무료 이용과 회사 모드',keywords:['무료','구독','요금','비용','체험','저장','회사모드','샘플'],steps:['구현된 기능은 월 구독료와 체험 만료 없이 이용합니다. 등록량과 저장공간의 운영 한도는 유지됩니다.','샘플은 현재 브라우저에 저장되며 실제 다른 사용자와 공유되지 않습니다. 회사 공유는 로그인과 해당 회사 권한이 필요합니다.','제공하지 않는 자동 결제·자동 메일 기능을 가이드가 대신 실행하지는 않습니다.']},
+  {id:'free',title:'무료 이용과 회사 모드',keywords:['무료','구독','요금','비용','체험','저장','회사모드','샘플'],steps:['구현된 기능은 월 구독료와 체험 만료 없이 이용합니다. 등록량과 저장공간의 운영 한도는 유지됩니다.','샘플은 로그인 후 계정별로 현재 브라우저에 저장되며 실제 다른 사용자와 공유되지 않습니다. 회사 공유는 로그인과 해당 회사 권한이 필요합니다.','제공하지 않는 자동 결제·자동 메일 기능을 가이드가 대신 실행하지는 않습니다.']},
  ];
 }
 const normalize=(s:string)=>s.toLowerCase().replace(/[\s·?!？。.,]/g,'');

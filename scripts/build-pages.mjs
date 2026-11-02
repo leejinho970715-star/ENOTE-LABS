@@ -41,7 +41,7 @@ try{
 await writeFile(new URL('sample-workspace.json',output),JSON.stringify({state:sampleState,reports:details}));
 await writeFile(new URL('pages-api.js',output),`let sample;
 export async function api(path,body){
- if(body)throw new Error('공개 체험판은 조회 전용입니다. 계정·저장·승인은 로컬 운영판에서 사용하세요.');
+ if(body)throw new Error('공개 체험판은 조회 전용입니다. 회사 계정에서 저장·검수 기능을 이용하세요.');
  sample ||= await fetch('${base}sample-workspace.json').then(r=>{if(!r.ok)throw new Error('가상 자료를 불러오지 못했습니다.');return r.json()});
  if(path==='state')return structuredClone(sample.state);
  if(path.startsWith('reports/')&&sample.reports[path.slice(8)])return {report:structuredClone(sample.reports[path.slice(8)])};
@@ -57,8 +57,8 @@ app=app.replace('<button class="quiet" data-action="logout">로그아웃</button
 app=app.replace('<button class="help-search-trigger"',`<a class="button outline" href="${base==='/'?'/account.html':'https://flow-note-psi.vercel.app/account.html'}">가입 · 로그인</a><button class="help-search-trigger"`);
 app=app.replace('SQLite에 실제 저장','공개 체험판 · 가상 자료');
 app=app.replace('로컬 운영판 · 외부 서비스 미연동<br>실제 고객 납품 검증 전','조회 전용 · 계정/서버 저장 없음<br>CSV 체험은 브라우저에서 처리');
-app=app.replace('보고서 상태와 승인·저장 기능은 실제로 동작합니다. 고객 실적이 아닙니다. 체험 계정은 로그아웃하면 다시 접근할 수 없습니다.','공개 체험판 · 아래 보고서와 승인 상태는 가상 예시입니다. 계정·저장·승인은 로컬 운영판에서만 동작합니다. CSV 직접 체험에서 자료를 넣어 집계할 수 있습니다.');
-app=app.replace('서버에서 역할을 확인합니다. 작성자는 자신이 만든 보고서를 승인할 수 없습니다.','아래는 가상 팀 구성 예시입니다. 실제 계정과 역할 검사는 로컬 운영판에서 동작합니다.');
+app=app.replace('보고서 상태와 승인·저장 기능은 실제로 동작합니다. 고객 실적이 아닙니다. 체험 계정은 로그아웃하면 다시 접근할 수 없습니다.','공개 체험판 · 아래 보고서와 승인 상태는 가상 예시입니다. 실제 저장·검수는 회사 계정에서 별도로 이용하세요. CSV 직접 체험에서 자료를 넣어 집계할 수 있습니다.');
+app=app.replace('서버에서 역할을 확인합니다. 작성자는 자신이 만든 보고서를 승인할 수 없습니다.','아래는 가상 팀 구성 예시입니다. 회사 자료는 회사 계정의 역할에 따라 조회·처리합니다.');
 app=app.replace('저장된 최신 상태를 불러왔습니다.','공개 가상 예시를 다시 불러왔습니다.');
 app=app.replace("name:'자료 확인 · 초안 작성',desc:'CSV를 넣고 원본과 대조하세요.',view:'compose'","name:'CSV 직접 체험',desc:'브라우저에서 CSV를 검사·집계하세요.',view:'csv'");
 app=app.replace('체크 표시는 저장된 자료의 준비 상태입니다. 다운로드·고객 수신을 자동 확인한 표시는 아닙니다.','아래는 가상 작업 흐름 예시입니다. 공개 체험판은 조회 전용이며 CSV 직접 체험은 브라우저 안에서 동작합니다.');
@@ -66,11 +66,14 @@ app=app.replace("if(el.dataset.helpView){if(state)",`if(el.dataset.helpView==='c
 app=app.replaceAll('/api/workspace/reports/${r.id}/download?format=html',base+'downloads/${r.id}.html').replaceAll('/api/workspace/reports/${r.id}/download?format=csv',base+'downloads/${r.id}.csv');
 app=app.replace('<div class="rail-bottom">',`<div class="rail-bottom"><a href="https://enote-labs.vercel.app/">← 서비스 소개</a><a href="https://agencyflow-studio-dun.vercel.app/">ProjectFlow 프로젝트 관리 ↗</a>`);
 app=app.replaceAll("from '/","from '"+base).replaceAll('src="/','src="'+base).replaceAll('href="/workspace"',`href="${base}workspace/"`).replaceAll('href="/"',`href="${base}csv.html"`);
-await writeFile(new URL('workspace.js',output),app);
+await writeFile(new URL('workspace-app.js',output),app);
+await writeFile(new URL('workspace.js',output),`import {requireProductLogin} from './auth-gate.js';if(await requireProductLogin('${base}'))await import('./workspace-app.js');`);
 const html=(await read('workspace.html')).replaceAll('__FLOWNOTE_ORIGIN__/workspace',origin+base+'workspace/').replaceAll('__FLOWNOTE_ORIGIN__',origin+base.slice(0,-1)).replaceAll('href="/','href="'+base).replaceAll('src="/','src="'+base).replace('</head>','<meta name="robots" content="noindex,follow"></head>');
-await writeFile(new URL('workspace/index.html',output),html);
-await writeFile(new URL('csv.html',output),(await read('index.html')).replaceAll('__FLOWNOTE_ORIGIN__/workspace',origin+base+'csv.html').replaceAll('__FLOWNOTE_ORIGIN__',origin+base.slice(0,-1)).replaceAll('href="/','href="'+base).replace('</head>','<meta name="robots" content="noindex,follow"></head>'));
-await writeFile(new URL('app.js',output),(await read('app.js')).replaceAll('href="/workspace"',`href="${base}workspace/"`));
+await writeFile(new URL('workspace/index.html',output),html.replace('<body>','<body class="auth-pending">'));
+await writeFile(new URL('csv.html',output),(await read('index.html')).replace('class="report-demo"','class="report-demo auth-pending"').replaceAll('__FLOWNOTE_ORIGIN__/workspace',origin+base+'csv.html').replaceAll('__FLOWNOTE_ORIGIN__',origin+base.slice(0,-1)).replaceAll('href="/','href="'+base).replace('</head>','<meta name="robots" content="noindex,follow"></head>'));
+await writeFile(new URL('csv-app.js',output),(await read('app.js')).replaceAll('href="/workspace"',`href="${base}workspace/"`));
+await writeFile(new URL('app.js',output),`import {requireProductLogin} from './auth-gate.js';if(await requireProductLogin('${base}'))await import('./csv-app.js');`);
+await build({entryPoints:[fileURLToPath(new URL('auth-gate.js',source))],outfile:fileURLToPath(new URL('auth-gate.js',output)),bundle:true,minify:true,format:'esm',target:'es2020'});
 await writeFile(new URL('.nojekyll',output),'');
 await import('./build-landing.mjs');
 process.stdout.write(`Public site built: dist/ at ${origin}${base} (no customer data, database files or secret keys)\n`);

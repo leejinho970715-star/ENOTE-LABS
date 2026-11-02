@@ -1,4 +1,5 @@
 "use client";
+import ProductAccess from "../../components/product-access";
 import {
   useCallback,
   useEffect,
@@ -32,6 +33,7 @@ import {
   type Feedback,
 } from "../../lib/domain";
 import ProductGuide from "../../components/product-guide";
+import OperationsPanel from "../../components/operations-panel";
 import DataChart from "../../components/data-chart";
 import {countSeries,dueSeries} from "../../../demos/weekly-report/charts.js";
 import { stageLabels, projectSummary } from "../../lib/pms";
@@ -44,7 +46,8 @@ type View =
   | "review"
   | "quotes"
   | "tasks"
-  | "settings";
+  | "settings"
+  | "planner";
 type Modal = {
   kind: "client" | "project" | "task" | "invite";
   data?: Client | Project;
@@ -58,10 +61,12 @@ const labels: Record<View, string> = {
   quotes: "견적서",
   tasks: "작업 목록",
   settings: "팀 · 이용 안내",
+  planner: "운영 플래너",
 };
 const safeMessage = (e: unknown) =>
   e instanceof Error ? e.message : "작업을 완료하지 못했습니다.";
-export default function Workspace() {
+export default function Workspace(){return <ProductAccess name="ProjectFlow"><WorkspaceContent/></ProductAccess>;}
+function WorkspaceContent() {
   const [state, setState] = useState<State>(emptyState),
     [demo, setDemo] = useState(true),
     [ready, setReady] = useState(false),
@@ -664,6 +669,10 @@ export default function Workspace() {
                   )}
                 </div>
               )}
+              {view === "planner" && !clientView && <OperationsPanel key={org?.id} scope={'projectflow-'+(org?.id||'')} records={[
+                ...projects.map(p=>({id:p.id,kind:'프로젝트',title:p.name,status:stageLabels[p.stage],owner:p.owner_name,due:p.due_on,start:p.starts_on,customer:clients.find(c=>c.id===p.client_id)?.name||'',target:p.id})),
+                ...state.tasks.filter(t=>t.org_id===org?.id&&projects.some(p=>p.id===t.project_id)).map(t=>({id:t.id,kind:'작업',title:t.title,status:t.status,owner:t.owner_name,due:t.due_on,customer:projects.find(p=>p.id===t.project_id)?.name||'',target:t.project_id}))
+              ]} onOpen={row=>pickProject(row.target||'',row.kind==='작업'?'tasks':'project')} />}
               {view === "overview" && (
                 <>
                   <div className="stats-grid">

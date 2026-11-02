@@ -1,27 +1,34 @@
 'use client';
-import {useState,useEffect,type FormEvent} from 'react';
-import {db,sample} from '../lib/data';
+import ProductAccess from "./product-access";
+import {useState,useEffect,useRef,type FormEvent} from 'react';
+import {db,sample,demoStorageKey} from '../lib/data';
 import {studioSample,sampleMembers} from '../lib/studio-domain';
 import {suiteEmpty,suiteDemoCommand,type SuiteData,type SuiteRow} from '../lib/suite';
 import DataChart from './data-chart';
+import {handoffChecks} from '../lib/handoff';
 import {countSeries} from '../../demos/weekly-report/charts.js';
 const text=(r:SuiteRow|undefined,k:string)=>String(r?.[k]??'');
 const today=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date());
-export default function SuiteWorkspace(){
- const [data,setData]=useState<SuiteData>(structuredClone(suiteEmpty)),[orgs,setOrgs]=useState<SuiteRow[]>([]),[orgId,setOrgId]=useState(''),[demo,setDemo]=useState(true),[session,setSession]=useState(false),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[error,setError]=useState('');
+export default function SuiteWorkspace(){return <ProductAccess name="제품 연결·인수인계 점검"><SuiteWorkspaceContent/></ProductAccess>;}
+function SuiteWorkspaceContent(){
+ const [data,setData]=useState<SuiteData>(structuredClone(suiteEmpty)),[orgs,setOrgs]=useState<SuiteRow[]>([]),[orgId,setOrgId]=useState(''),[demo,setDemo]=useState(true),[session,setSession]=useState(false),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[error,setError]=useState(''),[reportStart,setReportStart]=useState('');
+ const refreshGeneration=useRef(0);
  const org=orgs.find(o=>o.id===orgId)||orgs[0],oid=text(org,'id');
  function loadDemo(){
-  const pms=JSON.parse(localStorage.getItem('agencyflow-demo-v1')||'null')||sample();
-  const crm=JSON.parse(localStorage.getItem('studio-follonote-demo-v1')||'null')||studioSample();
-  const crew=JSON.parse(localStorage.getItem('studio-crewmemo-demo-v1')||'null')||studioSample();
-  const links=JSON.parse(localStorage.getItem('enote-suite-demo-v1')||'null')||{};
+  const pms=JSON.parse(localStorage.getItem(demoStorageKey('agencyflow-demo-v1'))||'null')||sample();
+  const crm=JSON.parse(localStorage.getItem(demoStorageKey('studio-follonote-demo-v1'))||'null')||studioSample();
+  const crew=JSON.parse(localStorage.getItem(demoStorageKey('studio-crewmemo-demo-v1'))||'null')||studioSample();
+  const links=JSON.parse(localStorage.getItem(demoStorageKey('enote-suite-demo-v1'))||'null')||{};
   setOrgs(pms.orgs);setData({...structuredClone(suiteEmpty),...links,contacts:crm.contacts,deals:crm.deals,clients:pms.clients,projects:pms.projects,tasks:pms.tasks,team_tasks:crew.team_tasks,members:sampleMembers,companies:[{id:'demo-company',name:'Flownote · 통합 샘플'}]});
  }
  async function refresh(id=oid){
+  const request=++refreshGeneration.current;
+  setData(structuredClone(suiteEmpty));
   setError('');setBusy(true);try{
    const who=await db.auth.getUser();setSession(!!who.data.user);if(!who.data.user)return;
    const [os,ms,cs]=await Promise.all([db.from('af_orgs').select('*'),db.from('af_members').select('*'),db.from('companies').select('id,name')]);
    for(const r of [os,ms,cs])if(r.error)throw r.error;
+   if(request!==refreshGeneration.current)return;
    const allowed=(os.data||[]).filter(o=>ms.data?.some(m=>m.org_id===o.id&&m.user_id===who.data.user?.id&&['admin','member'].includes(m.role)));setOrgs(allowed);
    const picked=allowed.find(o=>o.id===id)||allowed[0];if(!picked){setData(structuredClone(suiteEmpty));return;}setOrgId(picked.id);
    const names:Record<string,string>={contacts:'studio_contacts',clients:'af_clients',deals:'studio_deals',projects:'af_projects',tasks:'af_tasks',team_tasks:'studio_team_tasks',members:'af_members',customers:'suite_customers',project_links:'suite_projects',company_links:'suite_companies'};
@@ -29,16 +36,16 @@ export default function SuiteWorkspace(){
    for(const [k,table] of Object.entries(names)){const r=await db.from(table).select('*').eq('org_id',picked.id).limit(501);if(r.error)throw r.error;if((r.data||[]).length>500)throw Error('제품 연결 화면은 500건까지 표시합니다. 회사 자료 범위를 조정해 주세요.');next[k as keyof SuiteData]=r.data||[];}
    const cid=next.company_links[0]?.company_id;
    if(cid){for(const [k,t] of [['fn_clients','clients'],['fn_projects','projects'],['reports','latest_report_versions']]){const r=await db.from(t).select('*').eq('company_id',cid).limit(501);if(r.error)throw r.error;if((r.data||[]).length>500)throw Error('Flownote 연결 자료가 표시 한도 500건을 넘었습니다.');next[k as keyof SuiteData]=r.data||[];}}
-   setData(next);
-  }catch(e){setError(e instanceof Error?e.message:'연결 자료를 불러오지 못했습니다.');setData(structuredClone(suiteEmpty));}finally{setBusy(false);}
+   if(request===refreshGeneration.current)setData(next);
+  }catch(e){if(request===refreshGeneration.current){setError(e instanceof Error?e.message:'연결 자료를 불러오지 못했습니다.');setData(structuredClone(suiteEmpty));}}finally{if(request===refreshGeneration.current)setBusy(false);}
  }
  useEffect(()=>{const q=new URLSearchParams(location.search);const isDemo=q.get('mode')!=='cloud';setDemo(isDemo);setOrgId(q.get('org')||'');if(isDemo)loadDemo();else refresh(q.get('org')||'');},[]);
  async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();if(busy)return;const form=e.currentTarget,action=form.dataset.action!,p=Object.fromEntries(new FormData(form)) as Record<string,string>;setError('');setMessage('');setBusy(true);
   try{if(demo){const next=suiteDemoCommand(data,action,p,()=>crypto.randomUUID());
-    const pms=JSON.parse(localStorage.getItem('agencyflow-demo-v1')||'null')||sample(),crm=JSON.parse(localStorage.getItem('studio-follonote-demo-v1')||'null')||studioSample(),crew=JSON.parse(localStorage.getItem('studio-crewmemo-demo-v1')||'null')||studioSample();
+    const pms=JSON.parse(localStorage.getItem(demoStorageKey('agencyflow-demo-v1'))||'null')||sample(),crm=JSON.parse(localStorage.getItem(demoStorageKey('studio-follonote-demo-v1'))||'null')||studioSample(),crew=JSON.parse(localStorage.getItem(demoStorageKey('studio-crewmemo-demo-v1'))||'null')||studioSample();
     Object.assign(pms,{clients:next.clients,projects:next.projects,tasks:next.tasks});Object.assign(crm,{contacts:next.contacts,deals:next.deals});crew.team_tasks=next.team_tasks;
-    localStorage.setItem('agencyflow-demo-v1',JSON.stringify(pms));localStorage.setItem('studio-follonote-demo-v1',JSON.stringify(crm));localStorage.setItem('studio-crewmemo-demo-v1',JSON.stringify(crew));
-    localStorage.setItem('enote-suite-demo-v1',JSON.stringify({customers:next.customers,project_links:next.project_links,company_links:next.company_links,fn_clients:next.fn_clients,fn_projects:next.fn_projects}));setData(next);
+    localStorage.setItem(demoStorageKey('agencyflow-demo-v1'),JSON.stringify(pms));localStorage.setItem(demoStorageKey('studio-follonote-demo-v1'),JSON.stringify(crm));localStorage.setItem(demoStorageKey('studio-crewmemo-demo-v1'),JSON.stringify(crew));
+    localStorage.setItem(demoStorageKey('enote-suite-demo-v1'),JSON.stringify({customers:next.customers,project_links:next.project_links,company_links:next.company_links,fn_clients:next.fn_clients,fn_projects:next.fn_projects}));setData(next);
    }else{const payload={...p,org_id:oid,...(action==='project_to_flownote'?{campaigns:p.campaigns.split('|').map(s=>s.trim()).filter(Boolean)}:{})};const r=await db.rpc('suite_command',{p_action:action,p_payload:payload});if(r.error)throw r.error;await refresh();}
    setMessage('연결했습니다. 이미 연결된 항목은 중복 생성하지 않습니다.');
   }catch(e){setError(e instanceof Error?e.message:'연결하지 못했습니다.');}finally{setBusy(false);}
@@ -52,6 +59,7 @@ export default function SuiteWorkspace(){
   {!demo&&!session?<section className="panel"><h2>회사 계정으로 로그인</h2><form onSubmit={async e=>{e.preventDefault();setBusy(true);setError('');const p=new FormData(e.currentTarget);const r=await db.auth.signInWithPassword({email:String(p.get('email')),password:String(p.get('password'))});if(r.error)setError(r.error.message);else await refresh();setBusy(false);}}><label>이메일<input type="email" name="email" autoComplete="username" required/></label><label>비밀번호<input type="password" name="password" autoComplete="current-password" required/></label><button disabled={busy}>로그인</button></form><a className="button" href="https://agencyflow-studio-dun.vercel.app/workspace/?mode=cloud">회원가입 · 회사 만들기 ↗</a></section>:<>
   <label className="pms-search">공통 회사<select value={oid} disabled={demo||busy} onChange={e=>{setOrgId(e.target.value);refresh(e.target.value);}}>{orgs.map(o=><option key={o.id} value={o.id}>{o.name}</option>)}</select></label>
   <nav className="actions suite-product-links" aria-label="연결 제품"><a className="button" href={'/follonote/workspace/?'+base+'&org='+oid}>Follonote · CRM</a><a className="button" href={'/projectflow/workspace/?'+base+'&org='+oid}>ProjectFlow · PMS</a><a className="button" href={'/crewmemo/workspace/?'+base+'&org='+oid}>Crewmemo · Groupware</a><a className="button" href={'https://flow-note-psi.vercel.app/account.html'+(data.company_links[0]?'?company='+data.company_links[0].company_id:'')}>Flownote · ERP ↗</a></nav>
+  <section className="panel"><div className="section-heading"><div><h2>인수인계 점검</h2><p>수주→프로젝트→팀 업무→보고의 등록 근거를 확인합니다.</p></div><label>보고 시작일 (선택)<input type="date" value={reportStart} onChange={e=>setReportStart(e.target.value)}/></label></div><div className="operations-list">{handoffChecks(data,oid,{demo,periodStart:reportStart}).map(c=><article key={c.id}><div><span className="status-badge">{c.state}</span><h3>{c.title}</h3><p>{c.evidence}</p></div><a className="button" href={c.href}>관련 화면 열기 ↗</a></article>)}</div>{!handoffChecks(data,oid,{demo,periodStart:reportStart}).length&&<p>조회 가능한 수주·프로젝트가 없습니다. 연결 자료를 먼저 확인하세요.</p>}<p className="muted">읽기 전용 점검이며 자동 승인·전달·업무 변경을 실행하지 않습니다. 미설정·권한 부족을 업무 누락으로 확정하지 않습니다.</p></section>
   <div className="chart-grid"><DataChart title="제품 간 연결 현황" series={[{label:'CRM ↔ 프로젝트 고객',value:data.customers.length},{label:'Flownote 고객',value:data.customers.filter(c=>c.flownote_client_id).length},{label:'영업 → 프로젝트',value:data.project_links.filter(p=>p.deal_id).length},{label:'프로젝트 → 보고 기반',value:data.project_links.filter(p=>p.flownote_project_id).length},{label:'프로젝트 ↔ 팀 작업',value:data.team_tasks.filter(t=>t.project_task_id).length}]} note="연결 건수 기준 · 제품의 전체 등록 수와 구분"/><DataChart title="연결 회사의 보고 상태" series={countSeries(data.reports,'status',[],{DRAFT:'작성 중',IN_REVIEW:'검수 대기',APPROVED:'승인',DELIVERED:'전달 기록'})} kind="donut" note="Flownote 조회 권한으로 확인한 최신 버전 · 보고 자료가 없으면 미집계"/></div>
   <div className="suite-forms">
    <section className="panel"><h2>1. CRM 고객을 프로젝트에서 사용</h2><form data-action="customer_from_crm" onSubmit={submit}>{pick('contact_id','CRM 고객',data.contacts)}{action('고객 연결')}</form><form data-action="customer_from_pms" onSubmit={submit}>{pick('client_id','프로젝트 고객',data.clients)}{action('CRM 고객으로 연결')}</form></section>

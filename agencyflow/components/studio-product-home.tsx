@@ -94,7 +94,7 @@ export default function StudioProductHome({ kind }: { kind: ProductKind }) {
                 className="button primary"
                 href={studioOrigin + "/" + kind + "/workspace/"}
               >
-                가상 샘플 열기 ↗
+                로그인 후 샘플 보기 ↗
               </a>
               <a
                 className="button"

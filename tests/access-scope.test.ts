@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {demoCacheKey} from '../agencyflow/lib/access-scope.ts';
+test('browser sample storage requires an identity and never reuses another account or legacy anonymous cache',()=>{const base='agencyflow-demo-v1';assert.throws(()=>demoCacheKey(base,''));assert.notEqual(demoCacheKey(base,'user-a'),demoCacheKey(base,'user-b'));assert.notEqual(demoCacheKey(base,'user-a'),base);assert.notEqual(demoCacheKey(base,'user-a'),demoCacheKey('studio-crewmemo-demo-v1','user-a'));assert.equal(demoCacheKey(base,'user-a'),demoCacheKey(base,'user-a'));});

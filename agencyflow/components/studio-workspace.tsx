@@ -1,4 +1,5 @@
 "use client";
+import ProductAccess from "./product-access";
 import {
   useState,
   useEffect,
@@ -7,9 +8,11 @@ import {
   type FormEvent,
 } from "react";
 import ProductGuide from "./product-guide";
+import OperationsPanel from "./operations-panel";
+import {duplicateContacts,koreaDay} from "../lib/operations";
 import DataChart from "./data-chart";
 import {countSeries,sumSeries,dueSeries,daySeries,dayKey} from "../../demos/weekly-report/charts.js";
-import { db } from "../lib/data";
+import { db,demoStorageKey } from "../lib/data";
 import { money, readOnly, type Org } from "../lib/domain";
 import {
   productInfo,
@@ -58,10 +61,11 @@ function Field({
     </label>
   );
 }
-export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
+export default function StudioWorkspace({kind}:{kind:ProductKind}){return <ProductAccess name={productInfo[kind].name}><StudioWorkspaceContent kind={kind}/></ProductAccess>;}
+function StudioWorkspaceContent({ kind }: { kind: ProductKind }) {
   const info = productInfo[kind],
     crm = kind === "follonote",
-    cache = "studio-" + kind + "-demo-v1";
+    cache = demoStorageKey("studio-" + kind + "-demo-v1");
   const [data, setData] = useState<StudioData>(structuredClone(studioEmpty)),
     [orgs, setOrgs] = useState<Org[]>([]),
     [members, setMembers] = useState<Member[]>(sampleMembers),
@@ -71,7 +75,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
     [ready, setReady] = useState(false),
     [session, setSession] = useState(false),
     [view, setView] = useState("dash"),
-    [modal, setModal] = useState<{ action: string; row?: StudioRow } | null>(
+    [modal, setModal] = useState<{ action: string; row?: StudioRow; initial?: {title:string;body:string} } | null>(
       null,
     ),
     [contactId, setContactId] = useState(""),
@@ -80,6 +84,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
     [notice, setNotice] = useState(""),
     [dark, setDark] = useState(false),
     [search, setSearch] = useState("");
+  const refreshTicket = useRef(0);
   const dialog = useRef<HTMLDialogElement>(null),
     org = orgs.find((o) => o.id === orgId) || orgs[0],
     role = demo ? members.find((m) => m.user_id === actor)?.role : org?.role,
@@ -104,6 +109,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
         ["contacts", "고객 관리"],
         ["deals", "영업 파이프라인"],
         ["followups", "후속 연락"],
+        ["planner", "활동·운영 플래너"],
       ]
     : [
         ["dash", "오늘의 팀"],
@@ -111,8 +117,10 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
         ["calendar", "팀 일정"],
         ["approvals", "내부 결재"],
         ["tasks", "팀 업무"],
+        ["planner", "운영 플래너"],
       ];
   const refresh = useCallback(async () => {
+    const ticket=++refreshTicket.current;
     try {
       const [organizations, people, who] = await Promise.all([
         db.from("af_orgs").select("*"),
@@ -132,11 +140,15 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
               ?.role || "client",
         })),
       );
+      const chosen=organizations.data?.find(o=>o.id===orgId)?.id||organizations.data?.[0]?.id;
+      if(!chosen){setData(structuredClone(studioEmpty));return;}
+      if(chosen!==orgId)setOrgId(chosen);
       const loaded = await Promise.all(
         tables[kind].map(async (key) => {
           const { data, error } = await db
             .from("studio_" + key)
             .select("*")
+            .eq("org_id",chosen)
             .order("created_at", { ascending: false })
             .limit(5000);
           if (error) throw error;
@@ -147,6 +159,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
           return [key, data || []];
         }),
       );
+      if(ticket!==refreshTicket.current)return;
       setData({
         ...structuredClone(studioEmpty),
         ...Object.fromEntries(loaded),
@@ -155,7 +168,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
     } catch (e) {
       setError(errorText(e));
     }
-  }, [kind]);
+  }, [kind,orgId]);
   useEffect(() => {
     const initialDemo =
       new URLSearchParams(location.search).get("mode") !== "cloud";
@@ -190,8 +203,8 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
     if (
       requested &&
       (kind === "follonote"
-        ? ["dash", "contacts", "deals", "followups"]
-        : ["dash", "notices", "calendar", "approvals", "tasks"]
+        ? ["dash", "contacts", "deals", "followups", "planner"]
+        : ["dash", "notices", "calendar", "approvals", "tasks", "planner"]
       ).includes(requested)
     )
       setView(requested);
@@ -212,7 +225,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
         const next = studioDemoCommand(data, action, p, actor);
         localStorage.setItem(cache, JSON.stringify(next));
         if(kind==='crewmemo' && action==='team_task_status'){
-          const raw=localStorage.getItem('agencyflow-demo-v1');if(raw){const pms=JSON.parse(raw);for(const t of next.team_tasks){if(t.project_task_id){const source=pms.tasks.find((x:any)=>x.id===t.project_task_id&&x.org_id===t.org_id);if(source)source.status=t.status;}}localStorage.setItem('agencyflow-demo-v1',JSON.stringify(pms));}
+          const raw=localStorage.getItem(demoStorageKey('agencyflow-demo-v1'));if(raw){const pms=JSON.parse(raw);for(const t of next.team_tasks){if(t.project_task_id){const source=pms.tasks.find((x:any)=>x.id===t.project_task_id&&x.org_id===t.org_id);if(source)source.status=t.status;}}localStorage.setItem(demoStorageKey('agencyflow-demo-v1'),JSON.stringify(pms));}
         }
         setData(next);
       } else {
@@ -317,6 +330,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
     const p: Record<string, unknown> = Object.fromEntries(
       new FormData(e.currentTarget),
     );
+    if(modal.initial&&String(p.body).trim()===modal.initial.body.trim()){setError("양식의 빈 항목에 내용을 작성하세요.");return;}
     if (modal.row) p.id = modal.row.id;
     if ("amount" in p) p.amount = +String(p.amount);
     if (modal.action === "notice") p.pinned = p.pinned === "on";
@@ -332,7 +346,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
   }
   const memberName = (id: string) =>
     staff.find((m) => m.user_id === id)?.name || "팀원";
-  const value = (key: string) => (modal?.row ? text(modal.row, key) : "");
+  const value = (key: string) => (modal?.row ? text(modal.row, key) : modal?.initial?.[key as "title"|"body"] || "");
   const contactSelect = (
     <label>
       고객
@@ -562,6 +576,14 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
                   </label>
                 )}
               </div>
+              {view === "planner" && role!=='client' && <OperationsPanel key={(org?.id||'demo')+kind} scope={kind+'-'+(org?.id||'demo')} records={crm?[
+                ...deals.map(d=>({id:d.id,kind:'영업기회',title:text(d,'title'),status:text(d,'stage'),owner:text(d,'owner_name'),due:text(d,'due_on'),customer:text(contacts.find(c=>c.id===d.contact_id),'name'),amount:Number(d.amount),target:text(d,'contact_id')})),
+                ...followups.map(f=>({id:f.id,kind:'후속 연락',title:text(f,'title'),status:text(f,'status'),owner:text(contacts.find(c=>c.id===f.contact_id),'owner_name'),due:text(f,'due_on'),customer:text(contacts.find(c=>c.id===f.contact_id),'name'),target:text(f,'contact_id')}))
+              ]:[
+                ...tasks.map(t=>({id:t.id,kind:'팀 업무',title:text(t,'title'),status:text(t,'status'),owner:memberName(text(t,'assignee_id')),due:text(t,'due_on'),target:'tasks'})),
+                ...events.map(t=>({id:t.id,kind:'일정',title:text(t,'title'),status:Date.parse(text(t,'ends_at'))<Date.now()?'일정 종료':'일정 예정',owner:'팀 공유',due:koreaDay(new Date(Date.parse(text(t,'ends_at'))-1)),start:koreaDay(new Date(text(t,'starts_at'))),startsAt:text(t,'starts_at'),endsAt:text(t,'ends_at'),body:text(t,'location'),target:'calendar'})),
+                ...approvals.map(a=>({id:a.id,kind:'결재',title:text(a,'title'),status:text(a,'status'),owner:memberName(text(a,'approver_id')),due:'',body:text(a,'decision_note'),target:'approvals'}))
+              ]} onOpen={row=>{if(crm){setContactId(row.target||'');setView('contacts');}else setView(row.target||'dash');}} />}
               {view === "dash" && (
                 <>
                   <div className="stats-grid">
@@ -763,6 +785,7 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
                   )}
                 </>
               )}
+              {crm && view === "contacts" && duplicateContacts(contacts.map(c=>({id:c.id,name:c.name,email:c.email,phone:c.phone}))).length>0 && <div className="operations-warning"><h3>중복 의심 고객 확인</h3><p>이메일·전화·회사명이 같은 기록입니다. 자동 병합하지 않습니다.</p>{duplicateContacts(contacts.map(c=>({id:c.id,name:c.name,email:c.email,phone:c.phone}))).map(g=><p key={g.key}>{g.key}: {g.ids.map(id=>text(contacts.find(c=>c.id===id),'name')).join(' / ')}</p>)}</div>}
               {crm && view === "contacts" && (
                 <>
                   <div className="chart-grid"><DataChart title="고객 유입 경로" series={countSeries(contacts,'source')} unit="곳" note="현재 회사의 활성 고객 전체 · 검색 전 등록 자료 · 전환율이 아닙니다." /></div>
@@ -863,17 +886,13 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
                             고객 보관
                           </button>
                         </div>
-                        <h3 className="studio-subtitle">상담 기록</h3>
-                        {rows("contact_notes")
-                          .filter((n) => n.contact_id === selectedContact.id)
-                          .map((n) => (
-                            <div className="reply" key={n.id}>
-                              <small>
-                                {new Date(n.created_at).toLocaleString("ko-KR")}
-                              </small>
-                              <p>{text(n, "body")}</p>
-                            </div>
-                          ))}
+                        <h3 className="studio-subtitle">고객 활동 타임라인</h3>
+                        <p className="muted">상담 기록과 등록된 기회·연락의 현재 상태를 함께 봅니다. 통화·메일을 자동 수집하지 않습니다.</p>
+                        <div className="operations-timeline">{[
+                          ...rows('contact_notes').filter(n=>n.contact_id===selectedContact.id).map(n=>({id:n.id,date:n.created_at,title:'상담 기록',body:text(n,'body')})),
+                          ...deals.filter(d=>d.contact_id===selectedContact.id).map(d=>({id:d.id,date:d.created_at,title:'영업기회 · '+text(d,'stage'),body:text(d,'title')+' / 기한 '+text(d,'due_on')})),
+                          ...followups.filter(f=>f.contact_id===selectedContact.id).map(f=>({id:f.id,date:f.created_at,title:'후속 연락 · '+text(f,'status'),body:text(f,'title')+' / 예정 '+text(f,'due_on')}))
+                        ].sort((a,b)=>b.date.localeCompare(a.date)).map(item=><article key={item.id}><b>{item.title}</b><small>{new Date(item.date).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})}</small><p>{item.body}</p></article>)}</div>
                         <form
                           onSubmit={async (e) => {
                             e.preventDefault();
@@ -1120,6 +1139,11 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
                   )}
                 </section>
               )}
+              {!crm && view === "approvals" && <div className="approval-templates">{[
+                {title:'비용 사용 요청',body:'사용 목적: \n예정 금액(KRW): \n사용 예정일: \n검토할 근거: '},
+                {title:'외부 업무 요청',body:'요청 목적: \n업체·담당자: \n업무 범위: \n예정 기간: \n검토할 근거: '},
+                {title:'프로젝트 변경 요청',body:'프로젝트: \n변경 이유: \n변경 범위·일정: \n고객 확인 사항: '}
+              ].map(initial=><button disabled={busy||locked} key={initial.title} onClick={()=>setModal({action:'approval',initial})}><b>{initial.title}</b><small>양식을 채운 뒤 결재자를 지정합니다.</small></button>)}</div>}
               {!crm && view === "approvals" && (
                 <>
                   <div className="chart-grid"><DataChart title="내부 결재 처리 상태" series={countSeries(approvals,'status',['대기','승인','반려','취소'])} kind="donut" note="현재 조회 가능한 회사 문서 · 실제 지급·전자서명과 별개" /></div>
@@ -1382,10 +1406,10 @@ export default function StudioWorkspace({ kind }: { kind: ProductKind }) {
             )}
             {["notice", "approval"].includes(modal.action) && (
               <>
-                <Field name="title" label="제목" />
+                <Field name="title" label="제목" value={value("title")} />
                 <label>
                   내용
-                  <textarea name="body" required maxLength={10000} rows={5} />
+                  <textarea name="body" defaultValue={value("body")} required maxLength={10000} rows={5} />
                 </label>
                 {modal.action === "notice" ? (
                   <label className="checkbox-label">

@@ -16,7 +16,7 @@ test('client help does not offer internal project tasks or team settings destina
  assert.equal(searchGuide('projectflow','내부 태스크 담당자',false).length,0);
 });
 test('all help destinations correspond to product menus and do not execute arbitrary URLs or actions',()=>{
- const valid={projectflow:['overview','projects','tasks','review','quotes','settings'],follonote:['dash','contacts','deals','followups'],crewmemo:['dash','notices','calendar','approvals','tasks']};
+ const valid={projectflow:['overview','projects','tasks','review','quotes','settings','planner'],follonote:['dash','contacts','deals','followups','planner'],crewmemo:['dash','notices','calendar','approvals','tasks','planner']};
  for(const product of Object.keys(valid) as GuideProduct[]){
   const topics=guideTopics(product);assert.equal(new Set(topics.map(t=>t.id)).size,topics.length);
   for(const t of topics){assert(t.steps.length>0);if(t.view)assert(valid[product].includes(t.view));if(t.href)assert.equal(t.href,'https://enote-labs.vercel.app/suite/');}
