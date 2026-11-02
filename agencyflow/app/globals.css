@@ -1951,3 +1951,4 @@ th {
 
 /* Keep all CTA rows spaced when they wrap onto another line. */
 .actions{column-gap:12px;row-gap:12px}.public-hero .actions{align-items:stretch}.public-hero .actions>.button{min-height:56px}
+.studio-contact-layout .project-row{margin-top:12px;border:1px solid var(--border);border-radius:10px;padding:16px}

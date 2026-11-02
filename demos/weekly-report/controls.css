@@ -1,5 +1,5 @@
 /* Shared action control rhythm; data rows and interactive canvases keep their own size. */
-:is(.app-shell,#workspace-app,.account-page,.report-demo) :is(.button,button):not(.project-row,.activity-row,.review-row,.report-item,.onboarding-step,.help-article-card,.pin,.feedback-pin){min-height:44px;height:44px;padding-block:0;line-height:1.4;box-sizing:border-box;font-size:14px}
+:is(.app-shell,#workspace-app,.account-page,.report-demo) :is(.button,button):not(.project-row,.activity-row,.review-row,.report-item,.onboarding-step,.help-article-card,.pin,.feedback-pin,.onboarding-steps button){min-height:44px;height:auto;padding-block:10px;line-height:1.5;box-sizing:border-box;font-size:14px;max-width:100%;white-space:normal;overflow-wrap:anywhere}
 :is(.app-shell,#workspace-app,.account-page,.report-demo) :is(.actions,.section-heading,.section-head,.rail-bottom,.workspace-bar>div,.app-topbar,.review-toolbar,.auth-actions,.save-bottom,.project-bottom){gap:12px;flex-wrap:wrap}
 :is(.app-shell,#workspace-app,.account-page,.report-demo) form{gap:16px}
 .app-rail nav,.rail nav{gap:12px}
@@ -9,4 +9,23 @@
 .account-page #auth>button,.account-page #auth+button[data-action="switch"]{height:44px;min-height:44px}
 .account-page #auth+button[data-action="switch"]{margin-top:12px}
 .button-stack{display:flex;flex-wrap:wrap;gap:12px}
-@media(max-width:680px){.app-rail .rail-bottom{flex-direction:row}.app-rail .rail-bottom>*{flex:1 1 150px}:is(.app-shell,#workspace-app,.account-page,.report-demo) .actions>:is(.button,button){flex:1 1 150px}.section-heading>button,.section-head>button{flex-shrink:0}}
+/* A CTA group may wrap in either direction; row gaps must survive wrapping. */
+:is(.app-shell,#workspace-app,.account-page,.report-demo) :is(.detail-actions,.download-area>div:last-child,.onboarding-title,.auth-actions){display:flex;flex-wrap:wrap;gap:12px}
+#workspace-app .onboarding-steps button{height:auto;min-height:132px;padding:17px;min-width:0}
+#workspace-app :is(.auth-card>button,.compose-input>.button)+button{margin-top:12px}
+:is(.app-shell,#workspace-app,.account-page,.report-demo) :is(.panel,.card,.stat,.section-head>*,.section-heading>*,.page-intro>*,.detail-top>*,.save-bottom>*){min-width:0}
+/* Explicit native-control styling avoids platform default green/blue fills. */
+progress{appearance:none;-webkit-appearance:none;accent-color:#c4541b;border:0;border-radius:20px;background:#fff0e4;overflow:hidden}
+progress::-webkit-progress-bar{background:#fff0e4;border-radius:20px}
+progress::-webkit-progress-value{background:#c4541b;border-radius:20px}
+progress::-moz-progress-bar{background:#c4541b;border-radius:20px}
+meter{accent-color:#c4541b}
+meter::-webkit-meter-bar{background:#fff0e4;border:0}
+meter::-webkit-meter-optimum-value,meter::-webkit-meter-suboptimum-value,meter::-webkit-meter-even-less-good-value{background:#c4541b}
+meter::-moz-meter-bar{background:#c4541b}
+@media(max-width:680px){.app-rail .rail-bottom{flex-direction:row}.app-rail .rail-bottom>*{flex:1 1 150px}.section-heading>button,.section-head>button{flex-shrink:1}.actions>:is(.button,button){flex:1 1 auto}#workspace-app .report-index{grid-template-columns:minmax(0,1fr);gap:12px}#workspace-app .review-row>span:nth-child(2){flex-basis:calc(100% - 58px)}#workspace-app .onboarding-steps button{min-height:0}#workspace-app .page{padding-bottom:90px}}
+
+.report-demo .input-panel>.button{display:flex;align-items:center;justify-content:center;margin:0;width:100%}
+.report-demo .input-panel>.button+.button{margin-top:12px}
+.report-demo :is(.tabs,.download-area>div:last-child){gap:12px}
+#workspace-app .onboarding-steps{gap:12px}

@@ -13,14 +13,14 @@ export function productMetadata(kind: ProductKind, workspace = false) {
     robots: { index: !workspace, follow: true },
     icons: {
       icon: [
-        { url: "/product-assets/" + kind + "-icon.svg", type: "image/svg+xml" },
+        { url: "/product-assets/" + kind + "-icon.svg?v=20261102", type: "image/svg+xml" },
         {
-          url: "/product-assets/" + kind + "-32.png",
+          url: "/product-assets/" + kind + "-32.png?v=20261102",
           sizes: "32x32",
           type: "image/png",
         },
       ],
-      apple: "/product-assets/" + kind + "-180.png",
+      apple: "/product-assets/" + kind + "-180.png?v=20261102",
     },
     openGraph: {
       title: p.name + " — " + p.title,
@@ -67,7 +67,7 @@ export default function StudioProductHome({ kind }: { kind: ProductKind }) {
     >
       <header className="public-header">
         <a className="af-brand" href={studioOrigin + "/" + kind + "/"}>
-          <img src={"/product-assets/" + kind + "-icon.svg"} alt="" />
+          <img src={"/product-assets/" + kind + "-icon.svg?v=20261102"} alt="" />
           <span className="brand-copy">{p.name}<small>{p.category}</small></span>
         </a>
         <nav>
