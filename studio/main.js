@@ -1,5 +1,8 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { mountLegalDialogs } from "./legal-dialog.js";
+
+mountLegalDialogs();
 gsap.registerPlugin(ScrollTrigger);
 const tabs = [...document.querySelectorAll('[role="tab"][data-product]')];
 const panels = [...document.querySelectorAll("[data-product-panel]")];

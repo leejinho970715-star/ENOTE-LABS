@@ -3,6 +3,7 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
 import { html } from "../studio/render.mjs";
+import { legalDocuments, legalPage } from "../studio/legal.mjs";
 const root = new URL("../", import.meta.url),
   dist = new URL("dist/", root);
 if (!process.env.STUDIO_SKIP_NEXT) {
@@ -31,6 +32,11 @@ await cp(new URL("studio/assets/", root), new URL("assets/", dist), {
   recursive: true,
 });
 await writeFile(new URL("index.html", dist), html);
+for (const document of legalDocuments) {
+  const directory = new URL(`legal/${document.id}/`, dist);
+  await mkdir(directory, {recursive:true});
+  await writeFile(new URL('index.html', directory), legalPage(document));
+}
 await copyFile(new URL("studio/style.css", root), new URL("style.css", dist));
 await copyFile(
   new URL("demos/weekly-report/assets/PretendardVariable.woff2", root),
