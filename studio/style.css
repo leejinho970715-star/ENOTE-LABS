@@ -2068,6 +2068,35 @@ a:focus-visible {
 .contact-section .contact-email {
   margin-left: 10px;
 }
+.mobile-section-nav{display:none}
+.digital-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.digital-card{min-width:0;display:flex;flex-direction:column;align-items:flex-start;padding:32px;border:1px solid #eadbcf;border-radius:22px;background:#fff9f3}
+.digital-symbol .clay-icon{width:72px;height:72px;margin-bottom:20px}
+.digital-card .eyebrow{margin-bottom:10px}
+.digital-card h3{margin-bottom:14px}
+.digital-card p{color:#766457;margin-bottom:20px}
+.digital-price{font-size:24px;color:#b94c18;font-weight:750;overflow-wrap:anywhere}
+.digital-card ul{padding-left:20px;margin:20px 0;line-height:1.9;color:#66574b}
+.digital-card .digital-use{font-size:14px;margin-top:auto}
+.digital-card .btn{width:100%}
+/* Mobile system: 44px touch targets, 12px action gaps, 16px form text. */
+.contact-section>div{display:flex;flex-wrap:wrap;align-content:start;gap:12px}
+.contact-section>div>:is(.eyebrow,h2,p,small){flex-basis:100%;min-width:0}
+.contact-section .contact-email{margin-left:0}
+.btn{max-width:100%;overflow-wrap:anywhere}
+@media(max-width:900px){.header nav{gap:16px}.digital-card{padding:26px}}
+@media(max-width:700px){
+  .mobile-section-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:8px 18px 14px;background:#fcfbf9}
+  .mobile-section-nav a{display:flex;align-items:center;justify-content:center;min-height:44px;padding:8px 2px;font-size:14px;line-height:1.5;border:1px solid #eadbcf;border-radius:9px;background:#fff;color:#62452f;text-align:center}
+  .digital-grid{grid-template-columns:minmax(0,1fr);gap:20px}
+  .digital-card{padding:24px}
+  .digital-card h3{font-size:23px}
+  .hero .actions,.feature-copy .actions{gap:12px}
+  .contact-section .btn{width:100%;min-height:52px}
+  .contact-section :is(input,select,textarea){font-size:16px;min-width:0;max-width:100%}
+  .product-tabs button{min-height:76px}
+  .footer :is(a,address){overflow-wrap:anywhere}
+}
 @media (max-width: 600px) {
   .contact-section .contact-email {
     margin-left: 0;

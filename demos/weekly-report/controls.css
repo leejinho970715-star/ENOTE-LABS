@@ -29,3 +29,7 @@ meter::-moz-meter-bar{background:#c4541b}
 .report-demo .input-panel>.button+.button{margin-top:12px}
 .report-demo :is(.tabs,.download-area>div:last-child){gap:12px}
 #workspace-app .onboarding-steps{gap:12px}
+@media(max-width:900px){
+  :is(.app-shell,#workspace-app,.account-page,.report-demo) :is(input:not([type=checkbox],[type=radio]),select,textarea){font-size:16px;min-width:0;max-width:100%}
+  :is(.app-shell,#workspace-app,.account-page,.report-demo) :is(.actions,.detail-actions){align-items:stretch;gap:12px}
+}
