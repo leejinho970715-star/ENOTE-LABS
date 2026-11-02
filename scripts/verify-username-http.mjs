@@ -1,0 +1,40 @@
+// Creates disposable synthetic identities. Cleanup SQL is printed without credentials.
+import assert from 'node:assert/strict';
+import {randomBytes} from 'node:crypto';
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
+import {createClient} from '@supabase/supabase-js';
+const config=JSON.parse(await readFile(new URL('../supabase/public-config.json',import.meta.url),'utf8'));
+const suffix=randomBytes(5).toString('hex'),username='check_'+suffix,password=randomBytes(24).toString('base64url');
+const endpoint=config.url+'/functions/v1/username-signup';
+const post=(body,origin='https://enote-labs.vercel.app',key=config.publishableKey)=>fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json',apikey:key,Origin:origin},body:JSON.stringify(body)});
+const client=createClient(config.url,config.publishableKey,{auth:{persistSession:false,autoRefreshToken:false}});
+await mkdir(new URL('../tmp/',import.meta.url),{recursive:true});
+const state={username,password,user_id:'',company_id:'',org_id:''};
+const save=()=>writeFile(new URL('../tmp/username-http-fixture.json',import.meta.url),JSON.stringify(state));
+await save();
+assert.equal((await post({name:'Synthetic',username,password},'https://invalid.example')).status,403);
+assert.equal((await post({name:'Synthetic',username,password},undefined,'invalid')).status,401);
+assert.equal((await post({name:'Synthetic',username:'<invalid>',password})).status,400);
+const owner=await post({name:'Not owner',username:'dudrhkddmlcn',password});
+assert.equal(owner.status,400);assert.match((await owner.json()).error,/대표/);
+const created=await post({name:'Synthetic HTTP member',username,password,app_metadata:{role:'owner'},role:'owner'});
+const createdBody=await created.json();assert.equal(created.status,201,JSON.stringify(createdBody));
+const login=await client.auth.signInWithPassword({email:username+'@id.enote-labs.invalid',password});
+assert.ifError(login.error);state.user_id=login.data.user.id;await save();
+assert.equal(login.data.user.app_metadata.enote_login,'username');assert.equal(login.data.user.app_metadata.username,username);assert.notEqual(login.data.user.app_metadata.role,'owner');
+assert.ifError((await client.auth.getUser()).error);
+const status=await client.rpc('enote_admin',{p_action:'status'});assert.ifError(status.error);assert.equal(status.data.role,'none');
+assert.equal((await post({name:'Duplicate',username:username.toUpperCase(),password})).status,400);
+const outsider=createClient(config.url,config.publishableKey,{auth:{persistSession:false,autoRefreshToken:false}});
+assert((await outsider.auth.signInWithPassword({email:username+'@id.enote-labs.invalid',password:'wrong-password'})).error);
+const company=await client.rpc('flownote_command',{p_action:'create_company',p_payload:{name:'Username HTTP synthetic company'}});assert.ifError(company.error);state.company_id=company.data.company_id;await save();
+const own=await client.from('companies').select('id').eq('id',state.company_id);assert.ifError(own.error);assert.equal(own.data.length,1);
+const foreign=await outsider.from('companies').select('id').eq('id',state.company_id);assert(!foreign.data?.length);
+const org=await client.rpc('agencyflow_command',{p_action:'create_org',p_payload:{name:'Username HTTP synthetic organization'}});assert.ifError(org.error);
+const orgs=await client.from('af_orgs').select('id,name').eq('name','Username HTTP synthetic organization');assert.ifError(orgs.error);assert.equal(orgs.data.length,1);state.org_id=orgs.data[0].id;await save();
+for(const table of ['af_clients','af_projects','studio_contacts','studio_team_tasks']){
+ const q=await client.from(table).select('id').eq('org_id',state.org_id);assert.ifError(q.error);
+}
+assert.ifError((await client.auth.refreshSession()).error);
+console.log('PASS: username signup without mail, password sign in, real session refresh, role protection, company creation and four-product scoped data reads.');
+console.log('Disposable fixture IDs:',JSON.stringify({user_id:state.user_id,company_id:state.company_id,org_id:state.org_id}));

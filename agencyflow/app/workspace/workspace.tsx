@@ -1,4 +1,5 @@
 "use client";
+import {loginAddress} from '../../../shared/identity.js';
 import ProductAccess from "../../components/product-access";
 import {
   useCallback,
@@ -239,39 +240,6 @@ function WorkspaceContent() {
     );
     if (!isDemo && session) refresh();
   }
-  async function auth(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setBusy(true);
-    setError("");
-    const values = new FormData(e.currentTarget),
-      signup =
-        ((e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement)
-          ?.value === "signup";
-    try {
-      const payload = {
-        email: String(values.get("email")).trim(),
-        password: String(values.get("password")),
-      };
-      const result = signup
-        ? await db.auth.signUp({
-            ...payload,
-            options: {
-              emailRedirectTo: "https://agencyflow-studio-dun.vercel.app/workspace/?mode=cloud",
-            },
-          })
-        : await db.auth.signInWithPassword(payload);
-      if (result.error) throw result.error;
-      setNotice(
-        signup
-          ? "가입 요청을 처리했습니다. 메일 확인이 필요합니다. 발송 설정 미완료 시 일반 고객 메일은 도착하지 않을 수 있습니다."
-          : "로그인했습니다.",
-      );
-    } catch (e) {
-      setError(safeMessage(e));
-    } finally {
-      setBusy(false);
-    }
-  }
   async function createOrg(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
@@ -304,7 +272,7 @@ function WorkspaceContent() {
         ...(modal.data ? { id: modal.data.id } : {}),
       });
     if (modal.kind === "task") ok = await run("task", p);
-    if (modal.kind === "invite") ok = await run("invite", p);
+    if (modal.kind === "invite") ok = await run("invite", {...p,email:loginAddress(p.email)});
     if (ok) setModal(null);
   }
   async function addVersion(e: FormEvent<HTMLFormElement>) {
@@ -511,7 +479,7 @@ function WorkspaceContent() {
             <span>
               {demo
                 ? "이 브라우저에만 저장됩니다. 실제 팀·고객과 공유되지 않으며 역할 전환은 시연용입니다."
-                : "로그인한 회사의 데이터에 저장됩니다. 일반 고객 인증 메일·결제는 준비 중입니다. 익명화 자료로 검증하세요."}
+                : "로그인한 회사의 데이터에 저장됩니다. 결제는 준비 중입니다. 익명화 자료로 검증하세요."}
             </span>
           </div>
           {error && (
@@ -547,41 +515,7 @@ function WorkspaceContent() {
                   도착하지 않으면 운영자에게 문의하세요.
                 </p>
               </div>
-              <form className="panel auth-form" onSubmit={auth}>
-                <h2>로그인 · 회원가입</h2>
-                <Field name="email" label="이메일" type="email" required />
-                <label>
-                  비밀번호 (10자 이상)
-                  <input
-                    type="password"
-                    name="password"
-                    minLength={10}
-                    maxLength={128}
-                    required
-                    autoComplete="current-password"
-                  />
-                </label>
-                <button
-                  className="button primary"
-                  name="intent"
-                  value="login"
-                  disabled={busy}
-                >
-                  로그인
-                </button>
-                <button
-                  className="button"
-                  name="intent"
-                  value="signup"
-                  disabled={busy}
-                >
-                  가입 확인 메일 요청
-                </button>
-                <small>
-                  가입만으로 요금이 청구되지 않습니다. 결제 기능은 비활성
-                  상태입니다.
-                </small>
-              </form>
+              <section className="panel"><h2>계정 연결 확인</h2><p>로그인한 계정의 회사 공간을 확인합니다.</p><button className="button" onClick={()=>void refresh()}>계정 다시 확인</button></section>
             </section>
           ) : !org ? (
             <section className="panel welcome-panel">
@@ -2136,8 +2070,8 @@ function WorkspaceContent() {
               <>
                 <Field
                   name="email"
-                  label="가입·이메일 확인을 마친 계정"
-                  type="email"
+                  label="가입한 아이디 (기존 계정은 이메일)"
+                  type="text"
                   required
                 />
                 <Field name="name" label="표시 이름" required />

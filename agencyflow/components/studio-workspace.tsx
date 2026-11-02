@@ -1,4 +1,5 @@
 "use client";
+import {loginAddress} from '../../shared/identity.js';
 import ProductAccess from "./product-access";
 import {
   useState,
@@ -233,7 +234,7 @@ function StudioWorkspaceContent({ kind }: { kind: ProductKind }) {
           action === "invite_member"
             ? await db.rpc("agencyflow_command", {
                 p_action: "invite",
-                p_payload: { ...p, org_id: org?.id, role: "member" },
+                p_payload: { ...p, email:loginAddress(p.email), org_id: org?.id, role: "member" },
               })
             : await db.rpc("studio_command", {
                 p_action: action,
@@ -271,42 +272,6 @@ function StudioWorkspaceContent({ kind }: { kind: ProductKind }) {
       "/" + kind + "/workspace/" + (next ? "" : "?mode=cloud"),
     );
     if (!next && session) refresh();
-  }
-  async function authenticate(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setBusy(true);
-    setError("");
-    const f = new FormData(e.currentTarget),
-      signup =
-        ((e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement)
-          ?.value === "signup",
-      credentials = {
-        email: String(f.get("email")).trim(),
-        password: String(f.get("password")),
-      };
-    try {
-      const result = signup
-        ? await db.auth.signUp({
-            ...credentials,
-            options: {
-              emailRedirectTo:
-                "https://flownote-studio.vercel.app/" +
-                kind +
-                "/workspace/?mode=cloud",
-            },
-          })
-        : await db.auth.signInWithPassword(credentials);
-      if (result.error) throw result.error;
-      setNotice(
-        signup
-          ? "가입 확인 메일이 필요합니다. SMTP 준비 전에는 일반 고객 메일 발송이 제한됩니다."
-          : "로그인했습니다.",
-      );
-    } catch (e) {
-      setError(errorText(e));
-    } finally {
-      setBusy(false);
-    }
   }
   async function createCompany(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -469,7 +434,7 @@ function StudioWorkspaceContent({ kind }: { kind: ProductKind }) {
             <span>
               {demo
                 ? "입력 내용은 이 브라우저에만 저장됩니다. 담당자 전환은 권한 흐름 시연이며 실제 다른 사용자와 공유되지 않습니다."
-                : "회사 내부 팀원의 자료만 조회·저장합니다. 일반 고객 인증 메일·결제·외부 자동 연동은 준비 중입니다."}
+                : "회사 내부 팀원의 자료만 조회·저장합니다. 결제·외부 자동 연동은 준비 중입니다."}
             </span>
           </div>
           {error && (
@@ -497,34 +462,11 @@ function StudioWorkspaceContent({ kind }: { kind: ProductKind }) {
                   속해 있으면 같은 회사 공간을 선택할 수 있습니다.
                 </p>
                 <p className="muted">
-                  일반 고객 메일 발송은 준비 중입니다. 회사 공간과 고객 권한은
+                  이메일 인증 없이 가입할 수 있습니다. 회사 공간과 고객 권한은
                   제품 간 구분되며 내부 팀원만 이 서비스에 접근합니다.
                 </p>
               </div>
-              <form className="panel auth-form" onSubmit={authenticate}>
-                <h2>로그인 · 회원가입</h2>
-                <Field name="email" label="이메일" type="email" />
-                <label>
-                  비밀번호 (10자 이상)
-                  <input
-                    name="password"
-                    type="password"
-                    minLength={10}
-                    required
-                    autoComplete="current-password"
-                  />
-                </label>
-                <button
-                  className="button primary"
-                  value="login"
-                  disabled={busy}
-                >
-                  로그인
-                </button>
-                <button className="button" value="signup" disabled={busy}>
-                  가입 확인 메일 요청
-                </button>
-              </form>
+              <section className="panel"><h2>계정 연결 확인</h2><p>로그인한 계정의 회사 공간을 확인합니다.</p><button className="button" onClick={()=>void refresh()}>계정 다시 확인</button></section>
             </div>
           ) : !demo && !org ? (
             <section className="panel welcome-panel">
@@ -778,7 +720,7 @@ function StudioWorkspaceContent({ kind }: { kind: ProductKind }) {
                         ))}
                       </div>
                       <p className="muted">
-                        가입·이메일 확인을 마친 계정을 연결합니다. 초대 메일은
+                        가입한 계정을 아이디로 연결합니다. 초대 메일은
                         자동 발송하지 않습니다.
                       </p>
                     </section>

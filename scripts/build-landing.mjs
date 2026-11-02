@@ -7,7 +7,7 @@ const canonical=process.env.LANDING_CANONICAL_URL||origin+base;
 const faqs=[
  ['Flownote 제품 도입과 맞춤 구축은 어떻게 다른가요?','Flownote는 고객 보고 업무를 위한 정해진 범위의 템플릿입니다. 맞춤 구축은 회사의 업무를 진단한 뒤 ERP·PMS·CRM 등 필요한 모듈과 연결 기능을 별도로 설계하는 서비스입니다.'],
  ['지금 체험판에서 무엇을 할 수 있나요?','공개 대시보드는 가상 자료 조회용입니다. CSV 체험에서는 브라우저로 파일을 검사·집계하고 고객별 HTML·CSV를 내려받을 수 있습니다. 실제 광고 수집·메일 발송·결제는 연결하지 않았습니다.'],
- ['Flownote는 어디에서 사용하나요?','현재 표준 설정은 한 PC에서 운영하는 로컬판을 기준으로 합니다. 클라우드에는 회사·고객·프로젝트 등록 화면이 연결돼 있으며, CSV 보고서 작성·저장·독립 검수·승인본 내보내기 화면을 제공합니다. 가입 후 이메일 확인이 필요합니다. 여러 PC의 공유 운영이 필요하면 별도로 범위를 검토합니다.'],
+ ['Flownote는 어디에서 사용하나요?','현재 표준 설정은 한 PC에서 운영하는 로컬판을 기준으로 합니다. 클라우드에는 회사·고객·프로젝트 등록 화면이 연결돼 있으며, CSV 보고서 작성·저장·독립 검수·승인본 내보내기 화면을 제공합니다. 이름·아이디·비밀번호로 가입하고 바로 로그인할 수 있습니다. 여러 PC의 공유 운영이 필요하면 별도로 범위를 검토합니다.'],
  ['맞춤 제작비는 얼마인가요?','기존 데모 기반의 작은 화면·업무 흐름 조정을 KRW 200,000~500,000에 제안합니다. 월 구독료가 아닌 1회 제작비이며 부가세 별도입니다. 계약 전 범위를 확정합니다.'],
  ['ERP의 회계·급여·재고까지 모두 구축해 주나요?','맞춤 구축은 필요한 업무를 먼저 정하는 방식입니다. 회계·급여·재고·생산 등 ERP 전체 기능은 기본 제공 범위가 아닙니다. 기존 ERP나 도구 활용이 적합한지도 검토한 뒤 구축 또는 연결 범위를 제안합니다.'],
  ['회사 자료와 상담 내용은 어디에 저장되나요?','CSV 체험 파일은 브라우저에서 처리합니다. 로컬 운영판은 해당 PC의 DB에, 클라우드 계정 자료는 회사별 접근 제한을 적용한 Supabase에 저장합니다. 이 페이지의 문의 초안은 서버에 저장·전송하지 않으며 텔레그램 전송은 방문자가 직접 진행합니다.'],
@@ -19,7 +19,7 @@ const schema={'@context':'https://schema.org','@graph':[
  organization,
  {'@type':'WebSite','@id':canonical+'#website',url:canonical,name:'Flownote',inLanguage:'ko-KR',publisher:{'@id':canonical+'#organization'}},
  {'@type':'WebPage','@id':canonical+'#webpage',url:canonical,name:'Flownote — 보고 업무 자동화 · 맞춤 ERP·PMS·CRM 구축',inLanguage:'ko-KR',isPartOf:{'@id':canonical+'#website'},about:[{'@id':canonical+'#flownote'},{'@id':canonical+'#custom'}]},
- {'@type':'SoftwareApplication','@id':canonical+'#flownote',name:'Flownote',applicationCategory:'BusinessApplication',operatingSystem:'Web, local Node.js runtime',description:'CSV 검사·고객별 주간 집계·HTML/CSV 출력과 로컬판 검수·승인·버전 보관을 제공하는 보고 업무 템플릿. 클라우드 보고서 저장·검수·승인본 내보내기를 제공하며 가입 후 이메일 확인 필요.',url:canonical+'#product'},
+ {'@type':'SoftwareApplication','@id':canonical+'#flownote',name:'Flownote',applicationCategory:'BusinessApplication',operatingSystem:'Web, local Node.js runtime',description:'CSV 검사·고객별 주간 집계·HTML/CSV 출력과 로컬판 검수·승인·버전 보관을 제공하는 보고 업무 템플릿. 클라우드 보고서 저장·검수·승인본 내보내기를 제공하며 이메일 인증 없이 아이디로 가입.',url:canonical+'#product'},
  {'@type':'Service','@id':canonical+'#custom',name:'맞춤 ERP·PMS·CRM 업무 시스템 구축',serviceType:'기업 맞춤 업무 시스템 구축',provider:{'@id':canonical+'#organization'},description:'업무 진단, 범위·완료 기준 합의, 구축·교육·인수, 유지관리·추가 확장. 필요한 모듈과 연결 범위를 확인해 개별 견적을 제안합니다.',url:canonical+'#solutions'}
 ]};
 await mkdir(new URL('marketing/',out),{recursive:true});
