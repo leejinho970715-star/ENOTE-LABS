@@ -6,7 +6,9 @@ import {build} from 'esbuild';
 import {fileURLToPath} from 'node:url';
 
 // Build only synthetic records in an ephemeral DB; never open the operator's database.
-const source=new URL('../demos/weekly-report/',import.meta.url),output=new URL('../dist/',import.meta.url);
+const outputSubdir=process.env.FLOWNOTE_OUTPUT_SUBDIR||'';
+if(outputSubdir&&!/^[a-z0-9_-]+$/.test(outputSubdir))throw Error('Invalid Flownote output subdirectory.');
+const source=new URL('../demos/weekly-report/',import.meta.url),output=new URL('../dist/'+(outputSubdir?outputSubdir+'/':''),import.meta.url);
 import {base,origin} from './site-config.mjs';
 const read=name=>readFile(new URL(name,source),'utf8');
 await Promise.all(['','assets/','fixtures/','downloads/','workspace/'].map(name=>mkdir(new URL(name,output),{recursive:true})));
@@ -54,7 +56,7 @@ app=app.replace("const roleText={owner:","const roleText={viewer:'공개 체험'
 app=app.replace("['compose','새 보고서','03']","['csv','CSV 직접 체험','03']");
 app=app.replace("if(el.dataset.nav){view=",`if(el.dataset.nav==='csv'){location.href='${base}csv.html';return;}\n  if(el.dataset.nav){view=`);
 app=app.replace('<button class="quiet" data-action="logout">로그아웃</button>','');
-app=app.replace('<button class="help-search-trigger"',`<a class="button outline" href="${base==='/'?'/account.html':'https://flow-note-psi.vercel.app/account.html'}">회사 데이터 열기</a><button class="help-search-trigger"`);
+app=app.replace('<button class="help-search-trigger"',`<a class="button outline" href="${base==='/'||base==='/flownote/'?base+'account.html':'https://flow-note-psi.vercel.app/account.html'}">회사 데이터 열기</a><button class="help-search-trigger"`);
 app=app.replace('SQLite에 실제 저장','공개 체험판 · 가상 자료');
 app=app.replace('로컬 운영판 · 외부 서비스 미연동<br>실제 고객 납품 검증 전','조회 전용 · 계정/서버 저장 없음<br>CSV 체험은 브라우저에서 처리');
 app=app.replace('보고서 상태와 승인·저장 기능은 실제로 동작합니다. 고객 실적이 아닙니다. 체험 계정은 로그아웃하면 다시 접근할 수 없습니다.','공개 체험판 · 아래 보고서와 승인 상태는 가상 예시입니다. 실제 저장·검수는 회사 계정에서 별도로 이용하세요. CSV 직접 체험에서 자료를 넣어 집계할 수 있습니다.');

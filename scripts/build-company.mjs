@@ -37,6 +37,11 @@ for (const document of legalDocuments) {
   await mkdir(directory, {recursive:true});
   await writeFile(new URL('index.html', directory), legalPage(document));
 }
+const flownote = spawnSync(process.execPath,[fileURLToPath(new URL('scripts/build-pages.mjs',root))],{
+  cwd:fileURLToPath(root),stdio:'inherit',
+  env:{...process.env,FLOWNOTE_OUTPUT_SUBDIR:'flownote',FLOWNOTE_BASE_PATH:'/flownote/',FLOWNOTE_SITE_URL:'https://enote-labs.vercel.app',LANDING_CANONICAL_URL:'https://enote-labs.vercel.app/flownote/'},
+});
+if(flownote.status!==0)process.exit(flownote.status||1);
 await copyFile(new URL("studio/style.css", root), new URL("style.css", dist));
 await copyFile(
   new URL("demos/weekly-report/assets/PretendardVariable.woff2", root),
@@ -52,6 +57,7 @@ await build({
 });
 for (const dir of [
   "suite",
+  "admin",
   "projectflow",
   "follonote",
   "crewmemo",

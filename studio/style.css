@@ -2105,6 +2105,13 @@ a:focus-visible {
 
 /* Policies: fixed header and independently scrollable body, including mobile. */
 .screen-preview{display:block;cursor:zoom-in;border-radius:0;line-height:0}
+.handoff-benefits{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.handoff-benefits article{min-width:0;padding:28px;border:1px solid #ead6c5;border-radius:20px;background:#fff8ef}
+.handoff-benefits .clay-icon{width:64px;height:64px;margin-bottom:20px}
+.handoff-benefits h3{font-size:23px;margin-bottom:14px}
+.handoff-benefits p{color:#715b49}
+.handoff-section>.actions{justify-content:center;margin-top:28px}
+@media(max-width:700px){.handoff-benefits{grid-template-columns:minmax(0,1fr);gap:16px}.handoff-benefits article{padding:24px}}
 html.screen-modal-open,html.screen-modal-open body{overflow:hidden}
 .screen-dialog{width:min(1360px,calc(100% - 48px));max-width:none;max-height:calc(100vh - 48px);max-height:calc(100dvh - 48px);padding:0;border:1px solid #6a5140;border-radius:20px;background:#27231f;color:#fff;overflow:hidden;box-shadow:0 24px 96px #0006}
 .screen-dialog[open]{display:flex;flex-direction:column}

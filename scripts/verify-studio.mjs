@@ -90,3 +90,8 @@ console.log(
 assert(html.includes("KRW 200,000") && html.includes("KRW 350,000") && html.includes("KRW 500,000"));
 assert(!html.includes("Lite 월") && html.includes("1회 제작비"));
 assert((await read("dist/suite/index.html")).includes("noindex"));
+assert((await read("dist/admin/index.html")).includes("noindex"));
+assert((await read("dist/flownote/workspace/index.html")).includes('class="auth-pending"'));
+assert((await read("dist/flownote/workspace.js")).includes("requireProductLogin('/flownote/')"));
+assert((await read("dist/flownote/account.js")).includes("agencyflow-auth-v1"));
+assert((await read("dist/flownote/index.html")).includes('href="https://enote-labs.vercel.app/flownote/"'));

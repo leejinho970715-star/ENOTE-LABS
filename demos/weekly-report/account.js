@@ -2,10 +2,11 @@ import {createClient} from '@supabase/supabase-js';
 import {escapeHTML as e} from './core.js';
 import {mountCloudReports} from './cloud-reports.js';
 const root=document.querySelector('#account-root'),message=document.querySelector('#account-message');
-let client,user=null,companyId=new URLSearchParams(location.search).get('company')||'',busy=false,loginMode=true,generation=0;
+const sameOriginSuite=location.pathname.startsWith('/flownote/');
+let client,user=null,companyId=new URLSearchParams(location.search).get('company')||'',busy=false,loginMode=sameOriginSuite||!new URLSearchParams(location.search).has('signup'),generation=0;
 const input=(name,label,type='text',extra='')=>`<label>${label}<input name="${name}" type="${type}" required ${extra}></label>`;
 const say=(text,error=false)=>{message.textContent=text;message.classList.toggle('cloud-error',error);};
-const readableError=error=>({email_address_not_authorized:'일반 고객용 가입 메일 서비스가 아직 연결되지 않았습니다. 현재 프로젝트 조직 구성원 주소로만 개발 검증할 수 있습니다.',over_email_send_rate_limit:'가입 메일 발송 한도에 도달했습니다. 잠시 후 다시 시도하세요.',invalid_credentials:'이메일과 비밀번호를 확인하세요.',email_not_confirmed:'메일함에서 이메일 확인을 완료한 뒤 로그인하세요.'}[error.code]||error.message||'처리하지 못했습니다.');
+const readableError=error=>({email_address_not_authorized:'일반 고객용 가입 메일 서비스가 아직 연결되지 않았습니다. 현재 프로젝트 조직 구성원 주소로만 개발 검증할 수 있습니다.',over_email_send_rate_limit:'가입 메일 발송 한도에 도달했습니다. 잠시 후 다시 시도하세요.',invalid_credentials:'이메일과 비밀번호를 확인하세요.',email_not_confirmed:'메일함에서 이메일 확인을 완료한 뒤 로그인하세요.',unexpected_failure:'확인 메일을 전송하지 못했습니다. 잠시 후 다시 시도하거나 ENOTE-LABS에 문의해 주세요.'}[error.code]||error.message||'처리하지 못했습니다.');
 function authView(){root.innerHTML=`<div class="account-grid"><section class="card"><h2>${loginMode?'로그인':'회원가입'}</h2><form id="auth">${loginMode?'':input('name','이름','text','maxlength="100" autocomplete="name"')}${input('email','이메일','email','autocomplete="username"')}${input('password','비밀번호 (10자 이상)','password',`minlength="10" maxlength="128" autocomplete="${loginMode?'current-password':'new-password'}"`)}<button class="button primary">${loginMode?'로그인':'가입 확인 메일 받기'}</button></form><button class="quiet" data-action="switch">${loginMode?'처음이라면 회원가입':'계정이 있다면 로그인'}</button></section><aside class="card"><h2>회사별로 따로 보관합니다.</h2><p class="hint">비밀번호는 Supabase Auth가 관리합니다. 회사에 속한 회원만 해당 회사 자료를 조회할 수 있습니다. 회원가입 후 이메일 확인이 필요합니다.</p><p class="hint">보고서는 회사·프로젝트·버전별로 축적하도록 DB가 구성되어 있습니다. 로그인 후 CSV 검사·보고서 버전 저장·독립 검수·승인본 내려받기를 이용하세요.</p></aside></div>`;}
 async function result(query){const{data,error}=await query;if(error)throw error;return data;}
 async function command(action,payload){return result(client.rpc('flownote_command',{p_action:action,p_payload:payload}));}
@@ -41,7 +42,7 @@ root.addEventListener('submit',event=>{event.preventDefault();const form=event.t
 });});
 root.addEventListener('click',event=>{const button=event.target.closest('button');if(!button||busy)return;
  if(button.dataset.action==='reload')run(refresh);
- if(button.dataset.action==='switch'){loginMode=!loginMode;say('');authView();}
+ if(button.dataset.action==='switch'){if(sameOriginSuite&&loginMode){location.assign('https://flow-note-psi.vercel.app/account.html?signup=1');return;}loginMode=!loginMode;say('');authView();}
  if(button.dataset.action==='logout')run(async()=>{await result(client.auth.signOut());user=null;companyId='';generation++;authView();say('로그아웃했습니다.');});
 });
 root.addEventListener('change',event=>{if(event.target.id==='company'&&!busy){companyId=event.target.value;run(refresh);}});
@@ -50,7 +51,7 @@ if(location.hostname.endsWith('.github.io')){
 }else try{
  const config=await fetch('./supabase-public.json').then(r=>{if(!r.ok)throw new Error('클라우드 공개 연결 설정을 불러오지 못했습니다.');return r.json();});
  if(!config.publishableKey.startsWith('sb_publishable_'))throw new Error('공개 클라이언트 키 설정을 확인하세요.');
- client=createClient(config.url,config.publishableKey,{auth:{flowType:'pkce',detectSessionInUrl:true}});
+ client=createClient(config.url,config.publishableKey,{auth:{flowType:'pkce',detectSessionInUrl:true,...(sameOriginSuite?{storageKey:'agencyflow-auth-v1'}:{})}});
  client.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT'){user=null;companyId='';generation++;authView();}});
  await refresh();
 }catch(error){say(error.message,true);root.innerHTML='<p>연결을 확인한 뒤 새로고침해 주세요.</p>';}
