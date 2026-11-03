@@ -2,7 +2,7 @@ import {createClient} from 'npm:@supabase/supabase-js@2.118.0';
 import {validateRegistration,usernameAddress} from '../../../shared/identity.js';
 import config from '../../public-config.json' with {type:'json'};
 const origins=new Set(['https://enote-labs.vercel.app','https://flownote-studio.vercel.app','https://flow-note-psi.vercel.app','https://agencyflow-studio-dun.vercel.app','http://127.0.0.1:3004','http://127.0.0.1:3005','http://127.0.0.1:3006']);
-const errors:Record<string,string>={owner_password_required:'대표 전용 아이디입니다. 기존 관리자 비밀번호를 함께 입력하세요.',username_unavailable:'이미 사용 중이거나 사용할 수 없는 아이디입니다.',rate_limited:'가입 요청이 많습니다. 15분 후 다시 시도하세요.',invalid_request:'가입 요청을 확인하지 못했습니다.'};
+const errors:Record<string,string>={owner_password_required:'대표 관리자 확인 비밀번호가 일치하지 않습니다. 이전에 지정한 관리자용 비밀번호를 입력하세요.',username_unavailable:'이미 사용 중이거나 사용할 수 없는 아이디입니다.',rate_limited:'가입 요청이 많습니다. 15분 후 다시 시도하세요.',invalid_request:'가입 요청을 확인하지 못했습니다.'};
 Deno.serve(async(req:Request)=>{
  const origin=req.headers.get('origin')||'';
  const headers={'Content-Type':'application/json','Cache-Control':'no-store',...(origins.has(origin)?{'Access-Control-Allow-Origin':origin,'Vary':'Origin'}:{})};
