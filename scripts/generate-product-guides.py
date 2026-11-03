@@ -174,7 +174,7 @@ for key in selected_products:
     c.showPage();page+=1;shell(c,key,page,'시작하기');y=H-110;y=para(c,'처음이라면, 이 순서대로.',40,y,size=25,bold=True)
     for i,step in enumerate(p['steps'],1):y=para(c,f'{i:02d}. {step}',40,y-20,size=16,bold=True)
     y=para(c,'샘플과 회사 모드',40,y-35,size=19,bold=True)
-    y=para(c,'로그인 후 가상 샘플과 회사 모드를 구분해 사용합니다. 샘플 입력은 브라우저에, 회사 자료는 DB에 저장합니다. 회사 자료는 회사별 소속과 역할에 따라 표시됩니다.',40,y)
+    y=para(c,('가상 워크스페이스는 조회용이며 CSV 검사는 브라우저 안에서 처리합니다. 회사 데이터 열기에서는 고객·프로젝트·보고서를 DB에 저장하고 회사별 역할에 따라 검수합니다.' if key=='flownote' else '로그인 후 가상 샘플과 회사 모드를 구분해 사용합니다. 샘플 입력은 현재 브라우저에만 저장됩니다. 회사 자료는 DB에 저장하며 회사별 소속과 역할에 따라 표시됩니다.'),40,y)
     y=para(c,'실제 고객 개인정보나 민감한 파일은 공개 체험에 넣지 마세요. 모드 안내를 확인한 뒤 사용하세요.',40,y)
     y=para(c,'브라우저에서 체험하기',40,y-20,size=17,bold=True);y=para(c,p['url'],40,y,size=10,color=GREEN)
     c.linkURL(p['url'],(40,y,555,y+35),relative=0,thickness=0);c.showPage()
