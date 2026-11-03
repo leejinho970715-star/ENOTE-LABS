@@ -3,7 +3,7 @@ import { legalFooter, legalDialogs } from "./legal.mjs";
 const origin = "https://enote-labs.vercel.app";
 const metaTitle = "ENOTE-LABS | ERP·PMS·CRM·그룹웨어와 맞춤 업무 시스템";
 const metaDescription =
-  "작은 팀의 ERP·PMS·CRM·그룹웨어 맞춤 구축부터 전자 카탈로그 구축·E-book 제작까지. ENOTE-LABS에서 업무와 고객에게 전할 자료를 함께 정리하세요.";
+  "Flownote 보고 관리, ProjectFlow 프로젝트 관리, Follonote 영업 CRM, Crewmemo 그룹웨어. 무료 데모로 확인하고 회사에 맞는 업무 시스템 제작을 상담하세요.";
 const shareTitle = "ENOTE-LABS | 우리 회사에 맞는 업무 시스템";
 const shareDescription =
   "우리 회사에 맞는 업무 시스템과 고객에게 전할 디지털 자료. 무료 제품 체험부터 맞춤 개발·전자 카탈로그·E-book 제작까지 ENOTE-LABS에 상담하세요.";
@@ -13,12 +13,13 @@ export const products = [
     screen: "flownote-screen-charts-20261101.jpg",
     name: "Flownote",
     category: "ERP",
+    keywords: ["주간보고자동화", "고객프로젝트관리", "인사카드", "조직도"],
     ko: "플로노트",
     tag: "보고 · 프로젝트 운영",
     color: "#c65a22",
     bg: "#fff0e2",
     title: "아침마다 모으던 자료,<br>보고할 내용만 남기세요.",
-    desc: "고객과 프로젝트의 진행 상황을 정리하고, 보고할 내용을 한곳에서 확인하세요. 작은 대행사의 반복 보고 업무부터 시작합니다.",
+    desc: "고객·프로젝트 관리와 CSV 주간보고 자동화를 한곳에서 확인하세요. 인사카드·조직도와 매출·매입 기록의 가상 데모를 제공하는 ERP형 업무 관리 제품입니다.",
     items: [
       "고객·프로젝트 현황 정리",
       "직원 인사카드·조직도·매출매입 가상 기록",
@@ -36,6 +37,7 @@ export const products = [
     screen: "agencyflow-screen-charts-20261101.jpg",
     name: "ProjectFlow",
     category: "PMS",
+    keywords: ["프로젝트관리", "프로젝트일정관리", "고객피드백관리", "PMS"],
     ko: "ProjectFlow",
     tag: "프로젝트 · 작업 · 피드백",
     color: "#c65a22",
@@ -47,7 +49,7 @@ export const products = [
       "버전별 수정 이력과 고객 승인",
       "운영 플래너·월간 일정·CSV·캘린더 파일",
     ],
-    note: "초기 검증판 · 결제·전자서명·웹 자동 검수는 준비 중",
+    note: "무료 데모 · 전자서명·웹 자동 검수는 미지원 · 제작 의뢰 별도 상담",
     url: "https://agencyflow-studio-dun.vercel.app/",
     icon: "feedback",
     tile: "어느 부분을 고칠지,<br>같은 화면을 보며 정확하게.",
@@ -59,6 +61,7 @@ export const products = [
     screen: "follonote-screen-charts-20261101.jpg",
     name: "Follonote",
     category: "CRM",
+    keywords: ["영업CRM", "고객상담관리", "영업파이프라인", "후속연락관리"],
     ko: "Follonote",
     tag: "영업 · 고객 관리",
     color: "#c65a22",
@@ -82,12 +85,13 @@ export const products = [
     screen: "crewmemo-screen-charts-20261101.jpg",
     name: "Crewmemo",
     category: "Groupware",
+    keywords: ["팀그룹웨어", "팀일정관리", "내부결재", "휴가신청양식"],
     ko: "Crewmemo",
     tag: "그룹웨어 · 팀 협업",
     color: "#c65a22",
     bg: "#fff0e2",
     title: "흩어진 팀 소식,<br>함께 움직이는 하루로.",
-    desc: "메신저 위로 밀려난 공지와 구두로 끝난 결정을 기록으로 남기세요. 공지, 팀 일정, 내부 결재와 담당 업무를 모았습니다.",
+    desc: "작은 팀을 위한 그룹웨어로 공지·팀 일정·내부 결재와 담당 업무를 모았습니다. 휴가 신청 양식으로 신청 내용을 전달하고 지정된 결재자가 승인·반려할 수 있습니다.",
     items: [
       "팀 공지·월간 일정·캘린더 파일",
       "결재 요청 양식·지정 결재자의 승인·반려 기록",
@@ -109,7 +113,8 @@ const heading = (tag, title, desc = "") =>
   `<div class="section-title reveal"><span class="eyebrow">${tag}</span><h2>${title.replaceAll("<em>", "<em data-typewriter>")}</h2>${desc ? `<p>${desc}</p>` : ""}</div>`;
 const clay = (name) =>
   `<img class="clay-icon" src="/assets/clay/${name}.webp" alt="" width="64" height="64" decoding="async">`;
-const productShowcase = `<section class="section wrap product-section" id="products">${heading("FIND YOUR WORKFLOW", "우리 팀에 맞는 제품,<br><em>탭으로 살펴보세요.</em>", "보고·프로젝트 관리부터 영업과 팀 협업까지.<br>실제 제품의 가상 샘플 화면으로 확인하세요.")}<div class="product-tabs" role="tablist" aria-label="제품 종류" aria-orientation="horizontal">${products.map((p, i) => `<button type="button" role="tab" id="tab-${p.id}" aria-controls="${p.id}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-product="${p.id}"><span class="tab-symbol" aria-hidden="true">${clay(p.icon)}</span><span><b>${p.name}</b><small><strong>${p.category}</strong><br>${p.tag}</small></span></button>`).join("")}</div><div class="product-panels">${products.map((p, i) => `<article class="feature-card product-panel" id="${p.id}" role="tabpanel" aria-labelledby="tab-${p.id}" tabindex="0" data-product-panel><div class="feature-copy"><span class="product-label">0${i + 1} / ${p.name.toUpperCase()} · ${p.category}</span><h2>${p.title}</h2><p>${p.desc}</p><ul>${p.items.map((s) => `<li>${s}</li>`).join("")}</ul><div class="actions">${btn(p.name + " 로그인하고 시작 ↗", p.id === "flownote" ? "/flownote/account.html" : (p.id === "agencyflow" ? "/projectflow/workspace/?mode=cloud" : "https://enote-labs.vercel.app/" + p.id + "/workspace/?mode=cloud"))}${btn("제품소개서 보기 ↗", "/manuals/" + p.id + "-guide-current-20261103b.pdf", "white")}</div><small>${p.note}</small></div><div class="feature-visual">${browser(p)}<div class="visual-note"><span aria-hidden="true">${clay(p.icon)}</span><div><b>${p.chip}</b><p>${p.sub}</p></div></div><a class="screen-original" href="/assets/${p.screen}" target="_blank" rel="noopener noreferrer">실제 캡처 크게 보기 ↗</a></div></article>`).join("")}</div><p class="caption">실제 제품을 캡처한 가상 자료 화면입니다. 제품 화면의 고유 색상은 유지했습니다.<br>제품별 기능과 제공 범위는 소개서에서 확인하세요.</p><p class="sr-only" id="product-tab-status" aria-live="polite"></p></section>`;
+const dataProtection = `<section class="section wrap data-protection" id="data-protection" aria-labelledby="data-protection-title"><div class="section-title"><span class="eyebrow">DATA ACCESS & DEMO GUIDE</span><h2 id="data-protection-title">자료 접근은 나누고,<br><em>보호 범위는 분명하게.</em></h2><p>회사별로 자료 접근을 나누고, 파일 비공개 설정과 사용자 역할별 권한을 적용했습니다.</p></div><div class="protection-grid"><article>${clay('custom')}<h3>회사별 접근 제한</h3><p>회사 소속과 접근 권한을 확인해 자료를 구분합니다.</p></article><article>${clay('check')}<h3>비공개 파일 저장</h3><p>업로드 파일은 비공개 저장소와 접근 권한으로 관리합니다.</p></article><article>${clay('team')}<h3>역할별 권한 구분</h3><p>관리자·팀원·고객의 역할에 따라 접근 가능한 자료와 업무를 나눕니다.</p></article></div><div class="protection-scope"><h3>데모는 가상 자료로 확인해 주세요.</h3><p>현재는 추가 보안 점검과 운영 DB·첨부파일 복구, 국외 처리 절차를 정비하는 단계입니다. 실제 고객·직원 개인정보나 민감한 문서는 입력하지 마세요.</p><p>이 안내는 보안 인증이나 무사고·모든 위험의 해소를 보장하지 않습니다. 실제 업무 도입 전 저장·권한·삭제·복구 조건을 함께 확인합니다.</p><div class="actions">${btn('개인정보·자료 처리 안내','/legal/privacy/','white')}${btn('실제 업무 도입 상담','#contact','orange')}</div></div></section>`;
+const productShowcase = `<section class="section wrap product-section" id="products">${heading("FIND YOUR WORKFLOW", "우리 팀에 맞는 제품,<br><em>탭으로 살펴보세요.</em>", "보고·프로젝트 관리부터 영업과 팀 협업까지.<br>실제 제품의 가상 샘플 화면으로 확인하세요.")}<div class="product-tabs" role="tablist" aria-label="제품 종류" aria-orientation="horizontal">${products.map((p, i) => `<button type="button" role="tab" id="tab-${p.id}" aria-controls="${p.id}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-product="${p.id}"><span class="tab-symbol" aria-hidden="true">${clay(p.icon)}</span><span><b>${p.name}</b><small><strong>${p.category}</strong><br>${p.tag}</small></span></button>`).join("")}</div><div class="product-panels">${products.map((p, i) => `<article class="feature-card product-panel" id="${p.id}" role="tabpanel" aria-labelledby="tab-${p.id}" tabindex="0" data-product-panel><div class="feature-copy"><span class="product-label">0${i + 1} / ${p.name.toUpperCase()} · ${p.category}</span><h2>${p.title}</h2><p>${p.desc}</p><ul class="product-keywords" aria-label="${p.name} 관련 키워드">${p.keywords.map(keyword=>`<li><span>#${keyword}</span></li>`).join("")}</ul><ul>${p.items.map((s) => `<li>${s}</li>`).join("")}</ul><div class="actions">${btn(p.name + " 로그인하고 시작 ↗", p.id === "flownote" ? "/flownote/account.html" : (p.id === "agencyflow" ? "/projectflow/workspace/?mode=cloud" : "https://enote-labs.vercel.app/" + p.id + "/workspace/?mode=cloud"))}${btn("제품소개서 보기 ↗", "/manuals/" + p.id + "-guide-current-20261103b.pdf", "white")}</div><small>${p.note}</small></div><div class="feature-visual">${browser(p)}<div class="visual-note"><span aria-hidden="true">${clay(p.icon)}</span><div><b>${p.chip}</b><p>${p.sub}</p></div></div><a class="screen-original" href="/assets/${p.screen}" target="_blank" rel="noopener noreferrer">실제 캡처 크게 보기 ↗</a></div></article>`).join("")}</div><p class="caption">실제 제품을 캡처한 가상 자료 화면입니다. 제품 화면의 고유 색상은 유지했습니다.<br>제품별 기능과 제공 범위는 소개서에서 확인하세요.</p><p class="sr-only" id="product-tab-status" aria-live="polite"></p></section>`;
 const digitalServices = [
   {name:"전자 카탈로그 구축",tag:"DIGITAL CATALOG",icon:"catalog-20261102",amount:300000,price:"KRW 300,000부터",desc:"보유한 카탈로그를 웹에서 열고, 링크로 공유하고, 문의로 이어가세요.",items:["기본형: 제공 PDF 최대 20페이지 · 웹 열람 페이지","다운로드·문의 링크·QR 이미지 1개 · 수정 1회","상품 소개 웹 1페이지 신규 구축은 KRW 500,000부터"],use:"추천: 제조·유통사, 전문 서비스 회사의 영업 자료"},
   {name:"E-book 제작",tag:"BUSINESS E-BOOK",icon:"ebook-20261102",amount:200000,price:"KRW 200,000부터",desc:"제품 사용법과 교육 내용을 목차가 있는 한 권의 PDF로.",items:["기본형: 표지 포함 최대 12페이지 · PDF 1종","템플릿 표지·내지 편집 · 클릭형 목차·링크 · 수정 1회","제공 원고 기준 · 집필·번역·EPUB 변환 별도"],use:"추천: 제품 매뉴얼, 고객 교육, 팀 온보딩 안내서"},
@@ -177,6 +182,7 @@ const schema = {
         "업무 진단, 작은 범위 견적, 구축·교육·인수 확인, 유지관리 및 확장",
     },
     ...digitalServices.map(service=>({"@type":"Service",name:service.name,url:origin+"/#digital",description:service.desc,provider:{"@id":origin+"/#organization"},offers:{"@type":"Offer",priceCurrency:"KRW",price:service.amount,description:service.items.join(" · ")+" · 부가세 별도 · 추가 범위 별도 견적"}})),
+    ...products.map(p=>({"@type":"SoftwareApplication","@id":origin+"/#app-"+p.id,name:p.name,url:origin+"/#"+p.id,applicationCategory:"BusinessApplication",operatingSystem:"Web browser",description:p.desc+" 무료 데모이며 실제 업무 제작은 별도 상담합니다.",keywords:p.keywords.join(", "),featureList:p.items,isAccessibleForFree:true})),
     {
       "@type": "ItemList",
       name: "ENOTE-LABS 제품",
@@ -189,7 +195,7 @@ const schema = {
     },
   ],
 };
-export const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${metaTitle}</title><meta name="description" content="${metaDescription}"><link rel="canonical" href="${origin}/"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:locale" content="ko_KR"><meta property="og:site_name" content="ENOTE-LABS"><meta property="og:title" content="${shareTitle}"><meta property="og:description" content="${shareDescription}"><meta property="og:url" content="${origin}/"><meta property="og:image" content="${origin}/assets/og-enote-labs-20261031.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:type" content="image/png"><meta property="og:image:alt" content="ENOTE-LABS 로고와 오렌지 업무 대시보드 샘플"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${shareTitle}"><meta name="twitter:description" content="${shareDescription}"><meta name="twitter:image:alt" content="ENOTE-LABS 로고와 오렌지 업무 대시보드 샘플"><meta name="twitter:image" content="${origin}/assets/og-enote-labs-20261031.png"><meta name="theme-color" content="#f57832"><link rel="icon" href="/assets/enote-labs-icon-32-20261031.png" type="image/png"><link rel="apple-touch-icon" href="/assets/enote-labs-icon-180-20261031.png"><link rel="preload" href="/assets/PretendardVariable.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/style.css?v=enote-20261103-username"><script type="module" src="/main.js?v=enote-20261103-username"></script><script type="application/ld+json">${JSON.stringify(schema).replaceAll("<", "\\u003c")}</script></head><body><a class="skip" href="#main">본문 바로가기</a><header class="header"><a class="brand" href="/" aria-label="ENOTE-LABS 홈"><img src="/assets/enote-labs-logo-20261031.png" alt="" width="32" height="32">ENOTE-LABS<span>이노트랩스</span></a><nav aria-label="주 메뉴"><a href="#products">제품</a><a href="#custom">맞춤 구축</a><a href="#digital">디지털 자료</a><a href="#pricing">도입 비용</a>${btn("업무 상담 ↗", "#contact", "small dark")}</nav></header><nav class="mobile-section-nav" aria-label="모바일 바로가기"><a href="#products">제품</a><a href="#custom">맞춤 구축</a><a href="#digital">자료 제작</a><a href="#pricing">도입 비용</a></nav><main id="main">
+export const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${metaTitle}</title><meta name="description" content="${metaDescription}"><link rel="canonical" href="${origin}/"><meta name="robots" content="index,follow,max-image-preview:large"><meta property="og:type" content="website"><meta property="og:locale" content="ko_KR"><meta property="og:site_name" content="ENOTE-LABS"><meta property="og:title" content="${shareTitle}"><meta property="og:description" content="${shareDescription}"><meta property="og:url" content="${origin}/"><meta property="og:image" content="${origin}/assets/og-enote-labs-20261031.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:type" content="image/png"><meta property="og:image:alt" content="ENOTE-LABS 로고와 오렌지 업무 대시보드 샘플"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${shareTitle}"><meta name="twitter:description" content="${shareDescription}"><meta name="twitter:image:alt" content="ENOTE-LABS 로고와 오렌지 업무 대시보드 샘플"><meta name="twitter:image" content="${origin}/assets/og-enote-labs-20261031.png"><meta name="theme-color" content="#f57832"><link rel="icon" href="/assets/enote-labs-icon-32-20261031.png" type="image/png"><link rel="apple-touch-icon" href="/assets/enote-labs-icon-180-20261031.png"><link rel="preload" href="/assets/PretendardVariable.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/style.css?v=enote-20261103-product-keywords"><script type="module" src="/main.js?v=enote-20261103-product-keywords"></script><script type="application/ld+json">${JSON.stringify(schema).replaceAll("<", "\\u003c")}</script></head><body><a class="skip" href="#main">본문 바로가기</a><header class="header"><a class="brand" href="/" aria-label="ENOTE-LABS 홈"><img src="/assets/enote-labs-logo-20261031.png" alt="" width="32" height="32">ENOTE-LABS<span>이노트랩스</span></a><nav aria-label="주 메뉴"><a href="#products">제품</a><a href="#custom">맞춤 구축</a><a href="#digital">디지털 자료</a><a href="#pricing">도입 비용</a>${btn("업무 상담 ↗", "#contact", "small dark")}</nav></header><nav class="mobile-section-nav" aria-label="모바일 바로가기"><a href="#products">제품</a><a href="#custom">맞춤 구축</a><a href="#digital">자료 제작</a><a href="#pricing">도입 비용</a></nav><main id="main">
 <section class="hero"><div class="wrap hero-inner"><div class="hero-copy reveal"><span class="eyebrow pill">LESS BUSYWORK. MORE FLOW.</span><h1>흩어진 일을 모아,<br><em data-typewriter>일이 흐르게.</em></h1><p>작은 팀의 보고·프로젝트·고객·협업 업무를<br class="desktop"> 필요한 제품과 맞춤 구축으로 정리합니다.</p><div class="actions">${btn("우리 팀에 맞는 제품 찾기 ↗", "#products", "orange")}${btn("맞춤 구축 상담", "#contact", "white")}</div><small>로그인 후 샘플을 확인하고, 작은 파일럿 범위를 상담하세요.</small></div><div class="hero-stage"><div class="glow peach"></div><div class="glow yellow"></div><div class="floating-chip chip-left"><span class="chip-icon" aria-hidden="true">${clay("report")}</span><div><b>보고 준비는 가볍게</b><span>모으고, 확인하고, 공유하세요.</span></div></div><div class="laptop mock-motion"><div class="laptop-display"><div class="mac-toolbar"><div class="mac-controls" aria-hidden="true"><i></i><i></i><i></i></div><div class="mac-address">Flownote · 실제 제품 화면</div><span class="mac-menu" aria-hidden="true">⋯</span></div><a class="screen-preview" data-screen-preview href="/assets/flownote-erp-orange-20261031.jpg" aria-label="Flownote 메인 화면 확대"><img src="/assets/flownote-erp-orange-20261031.jpg" alt="Flownote 보고서와 프로젝트 현황을 확인하는 실제 샘플 대시보드" width="1280" height="720" fetchpriority="high"></a></div><div class="laptop-base"></div></div><div class="floating-chip chip-right"><span class="check" aria-hidden="true">${clay("check")}</span><div><b>다음 할 일이 명확하게</b><span>기록에서 실행까지, 한 화면에.</span></div></div></div></div></section><section class="capabilities" aria-label="ENOTE-LABS 업무 솔루션"><div class="wrap capability-grid reveal">${[
   ["report", "보고 자동화"],
   ["feedback", "고객 피드백"],
@@ -203,6 +209,7 @@ export const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8">
   )
   .join("")}</div></section>
 ${productShowcase}
+${dataProtection}
 <section class="section custom-section" id="custom"><div class="wrap custom-grid"><div class="reveal"><span class="eyebrow">BUILT AROUND YOUR BUSINESS</span><h2>프로그램에 회사를 맞추지 말고,<br><em>회사에 맞게 만드세요.</em></h2><p>대행사는 자료 취합과 보고를,<br>제작사는 수정 요청과 납품을,<br>컨설팅사는 계약부터 결과물 승인을.</p><p>실제로 쓰는 엑셀과 업무 과정을 보고,<br>가장 먼저 줄일 반복 업무 하나를 정합니다.</p>${btn("우리 업무로 상담하기 ↗", "#contact", "orange")}</div><ol class="steps reveal">${[
   ["업무 진단", "현재 엑셀·처리 과정·반복 작업을 확인합니다."],
   ["작은 범위 견적", "우선 해결할 업무 하나와 완료 기준을 합의합니다."],
