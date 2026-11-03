@@ -415,7 +415,7 @@ function WorkspaceContent() {
         <div className="rail-bottom">
           {!clientView && <a className="button" href={"https://enote-labs.vercel.app/suite/?mode="+(demo?"demo":"cloud")+"&org="+(org?.id || (demo?"demo-org":""))}>제품 연결 ↗</a>}
           <a
-            href="/manuals/agencyflow-guide-charts-20261101.pdf"
+            href="/manuals/agencyflow-guide-current-20261103.pdf"
             target="_blank"
             rel="noopener noreferrer"
           >

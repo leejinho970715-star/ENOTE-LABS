@@ -5,7 +5,7 @@ Screens are fictional-sample screenshots captured from the actual static apps.
 from pathlib import Path
 import shutil, io, json, sys
 from xml.sax.saxutils import escape
-from PIL import Image
+from PIL import Image, ImageStat
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont as RLFont
 from reportlab.pdfgen import canvas
@@ -97,9 +97,44 @@ products['flownote']['limits'].insert(0,'공개 대시보드는 가상 자료 �
 products['agencyflow']['limits'].insert(0,'회사 운영 한도는 활성 프로젝트 100개·내부 구성원 10명·시안 총 1GB·파일당 5MB입니다. 간트·작업 의존관계·공수·임의 웹사이트 자동 검수는 포함하지 않습니다.')
 products['agencyflow']['screens']=[(v,'팀 · 무료 이용' if v=='team' else t,d,['기존 가입·이메일 확인 계정을 관리자가 회사에 연결합니다. 고객은 지정 프로젝트만 조회합니다.','구현된 기능은 무료입니다. 활성 프로젝트 100개·내부 10명·시안 총 1GB·파일당 5MB의 운영 한도를 확인하세요.','팀원 접근 권한은 제품 연결과 별도로 확인합니다. 초대 메일은 자동 발송하지 않습니다.'] if v=='team' else steps) for v,t,d,steps in products['agencyflow']['screens']]
 
+# Current release: keep public guides aligned with the actual account and workflow UI.
+REVISION='20261103'
+categories={'flownote':'ERP','agencyflow':'PMS','follonote':'CRM','crewmemo':'Groupware'}
+for key,p in products.items():
+    p['ko']=categories[key]
+    path='flownote/account.html' if key=='flownote' else ('projectflow' if key=='agencyflow' else key)+'/workspace/?mode=cloud'
+    p['url']='https://enote-labs.vercel.app/'+path
+    p['limits'][1 if key in ['flownote','agencyflow'] else 0]='구현된 기능은 월 구독료와 체험 만료 없이 무료입니다. 회사별 역할·등록량·파일 용량 제한은 유지되며 무제한 저장을 뜻하지 않습니다.'
+    p['limits']=[s for s in p['limits'] if '회사 공유는 이메일 확인' not in s]
+    p['limits'].insert(-1,'이름·아이디·비밀번호로 가입하고 같은 계정으로 네 제품을 이용합니다. 이메일 인증은 필요하지 않습니다. 회사 자료 접근에는 각 회사의 소속과 역할이 필요합니다.')
+    p['screens'].insert(0,('account','가입 · 로그인','하나의 아이디로 네 제품을 시작합니다.',['이름·아이디·비밀번호로 가입합니다. 아이디는 영문 소문자로 시작하는 4~24자의 영문·숫자·밑줄입니다.','비밀번호는 10자 이상입니다. 기존 이메일 계정도 로그인할 수 있습니다. 가입 후 회사 공간을 만들거나 관리자의 팀원 연결을 요청하세요.','제품 이용과 샘플 열기 모두 로그인이 필요합니다. 비밀번호를 잊었다면 운영자에게 계정 복구를 문의하세요.']))
+    p['screens'].append(('help','사용 가이드','기능 이름으로 필요한 사용법을 찾습니다.',['화면의 사용 가이드 버튼을 열고 기능 이름이나 질문을 입력합니다.','추천 도움말 또는 전체 사용법에서 안내를 확인하고 관련 메뉴로 이동합니다.','문서 검색 기반 안내입니다. 외부 AI 호출이나 회사 자료 조회·업무 실행을 대신하지 않습니다.']))
+    p['steps']=['이름·아이디·비밀번호로 가입하고 로그인합니다. 이메일 인증은 필요하지 않습니다.','가상 샘플로 화면을 살펴보거나 회사 공간을 만들고 기존 팀원 연결을 요청합니다.','제품별 메뉴에서 업무를 등록하고 도표·가이드·제품 연결을 활용합니다.']
+
+products['flownote']['limits'][0]='Flownote는 고객·프로젝트·CSV 보고 운영에 집중한 ERP형 제품입니다. 클라우드에서 보고서 작성·검수·승인·승인본 출력이 가능하며, 로컬 저장 운영판도 별도로 구분합니다. 회계·급여·재고를 포함한 종합 ERP는 아닙니다.'
+flownote_updates={
+ 'projects':['회사 데이터 열기에서 회사·고객·CSV 고객 ID·프로젝트·캠페인·기간을 등록합니다.','회사 소유자는 기존 가입 팀원을 아이디로 연결하고 작성자·검수자·조회자 역할을 지정합니다.','샘플 자료와 회사 DB 자료는 별도입니다. 회사별 고객 등록 등 운영 한도가 적용됩니다.'],
+ 'reports':['회사 계정의 보고서에서 CSV를 검사하고 제외 내역을 확인한 뒤 새 버전을 저장합니다.','작성자가 제출하면 다른 검수자가 승인하거나 수정 요청을 남깁니다. 자기 보고서는 스스로 승인하지 않습니다.','승인본은 CSV·HTML로 출력합니다. 전달 기록은 수동 기록이며 고객 수신 확인이나 자동 메일 발송이 아닙니다.'],
+ 'team':['회사 소유자가 기존 가입 회원을 아이디로 연결합니다. 초대 메일은 발송하지 않습니다.','작성자·검수자·조회자의 권한을 나누고 회사별 접근을 검사합니다.','대표 관리자 권한은 일반 가입으로 얻지 않습니다. 플랫폼 관리자 입장도 회사 자료의 권한을 대신하지 않습니다.'],
+ 'audit':['보고서의 버전·검수·승인·전달 기록을 확인합니다.','클라우드와 로컬 운영판의 자료는 저장 위치가 다르므로 현재 모드를 확인하세요.','승인본과 수동 전달 기록을 구분합니다. 고객의 실제 수신 여부를 추정하지 않습니다.']}
+products['flownote']['screens']=[(v,t,d,flownote_updates.get(v,s)) for v,t,d,s in products['flownote']['screens']]
+products['agencyflow']['screens']=[(v,'팀 · 무료 이용' if v=='team' else ('고객 피드백' if v=='feedback' else t),d,['가입한 팀원을 아이디로 연결하고 내부 팀원·고객 역할을 구분합니다. 고객은 배정된 프로젝트만 조회합니다.','구현된 기능은 무료입니다. 활성 프로젝트 100개·내부 10명·자료 총 1GB·파일당 5MB의 한도를 확인하세요.','초대 메일·구독 결제·전자서명은 자동 실행하지 않습니다.'] if v=='team' else s) for v,t,d,s in products['agencyflow']['screens']]
+for key in ['agencyflow','follonote','crewmemo']:
+    products[key]['screens'].append(('planner','운영 플래너 · 내보내기','흩어진 업무를 검색하고 월간 일정으로 봅니다.',['운영 플래너에서 검색어·종류·상태·담당자·마감 범위를 선택합니다. 목록과 월간 일정으로 전환할 수 있습니다.','현재 조회 CSV로 필터 결과를 저장합니다. 월간 일정에서는 선택 월 범위로 내보냅니다.','캘린더 파일(.ics)은 일회성 복사이며 자동 동기화가 아닙니다. 기한 초과와 완료 수치는 등록 상태·한국 날짜 기준입니다.']))
+products['follonote']['screens'].append(('timeline','고객 활동 · 중복 확인','고객과 나눈 이야기와 다음 행동을 함께 봅니다.',['고객 관리에서 고객을 선택하면 상담 기록·영업기회·후속 연락의 현재 상태를 타임라인으로 확인합니다.','중복 의심 고객은 이메일·전화·회사명 기준으로 안내하며 자동 병합하지 않습니다.','통화·메일을 자동 수집하지 않습니다. 상담 기록은 직접 작성합니다.']))
+
+def guide_shot(key,view):
+    if view=='account': return SHOTS/'account-latest.jpg'
+    if view=='help': return SHOTS/(key+'-help-latest.jpg')
+    latest=SHOTS/(key+'-'+view+'-latest.jpg')
+    if latest.exists(): return latest
+    return SHOTS/(('suite-charts' if view=='suite' else key+'-'+view)+'.jpg')
+
 def para(c,text,x,y,width=515,size=13,color=INK,bold=False):
     st=ParagraphStyle('p',parent=STYLE,fontName='PretendardBold' if bold else 'Pretendard',fontSize=size,leading=size*1.65,textColor=color)
-    p=Paragraph(escape(text),st); _,height=p.wrap(width,1000);p.drawOn(c,x,y-height);return y-height-12
+    p=Paragraph(escape(text),st); _,height=p.wrap(width,1000)
+    if y-height<58: raise ValueError('PDF content exceeds page: '+text[:60])
+    p.drawOn(c,x,y-height);return y-height-12
 
 def logo(c,kind,x,y,size=36):
     if kind=='enote' and (ROOT/'studio/assets/enote-labs-logo-20261031.png').exists():
@@ -122,41 +157,47 @@ def shell(c,p,page,section):
     c.setFillColor(white);c.rect(0,0,W,H,fill=1,stroke=0);logo(c,p,40,H-66,30)
     c.setFillColor(INK);c.setFont('PretendardBold',12);c.drawString(82,H-47,products[p]['name'])
     c.setFillColor(MUTED);c.setFont('Pretendard',9);c.drawRightString(W-40,H-47,'ENOTE-LABS | 제품 소개 · 사용 가이드')
-    c.setStrokeColor(LINE);c.line(40,43,W-40,43);c.setFont('Pretendard',9);c.drawString(40,27,'2026.11.01 · 무료 체험 · 맞춤 제작 · 가상 자료 화면');c.drawRightString(W-40,27,f'{page:02d}')
+    c.setStrokeColor(LINE);c.line(40,43,W-40,43);c.setFont('Pretendard',9);c.drawString(40,27,'2026.11.03 · 무료 이용 · 맞춤 제작 · 가상 자료 화면');c.drawRightString(W-40,27,f'{page:02d}')
     c.bookmarkPage('page'+str(page));c.addOutlineEntry(section,'page'+str(page),level=0,closed=False)
 
 for key in selected_products:
     p=products[key]
+    for view in ['dash']+[s[0] for s in p['screens']]:
+        shot=guide_shot(key,view)
+        assert shot.exists(),str(shot)
+        assert ImageStat.Stat(Image.open(shot).convert('L')).stddev[0]>8, 'Blank capture: '+str(shot)
     path=OUT/(key+'-guide.pdf');c=canvas.Canvas(str(path),pagesize=(W,H));c.setTitle(p['name']+' 제품소개 및 사용 매뉴얼 | ENOTE-LABS');c.setAuthor('ENOTE-LABS (이노트랩스)')
     page=1;shell(c,key,page,'제품 소개');y=H-116;y=para(c,p['name'],40,y,size=35,bold=True);y=para(c,p['ko']+' | '+p['tag'],40,y,size=15,color=GREEN);y=para(c,p['summary'],40,y-10,size=19,bold=True)
-    c.drawImage(str(SHOTS/(key+'-dash.jpg')),40,194,width=515,height=326,preserveAspectRatio=True,anchor='c',mask='auto')
+    c.drawImage(str(guide_shot(key,'dash')),40,194,width=515,height=326,preserveAspectRatio=True,anchor='c',mask='auto')
     para(c,'실제 프로그램의 가상 샘플 화면입니다. 고객 실적이나 상용 전체 완성을 의미하지 않습니다.',40,166,size=12,color=MUTED)
     para(c,'목차: 제품 소개 / 시작하기 / 화면별 사용법 / 도표 읽기 / 제품 연결 / 도입 안내',40,96,size=12)
     c.showPage();page+=1;shell(c,key,page,'시작하기');y=H-110;y=para(c,'처음이라면, 이 순서대로.',40,y,size=25,bold=True)
     for i,step in enumerate(p['steps'],1):y=para(c,f'{i:02d}. {step}',40,y-20,size=16,bold=True)
     y=para(c,'샘플과 회사 모드',40,y-35,size=19,bold=True)
-    y=para(c,('공개 대시보드는 가상 조회용입니다. 실제 자료의 저장·타인 검수·승인은 로컬 운영판 범위를 별도로 확인하세요.' if key=='flownote' else '샘플 입력은 현재 브라우저에만 저장됩니다. 회사 계정 모드는 실제 DB와 권한을 사용하며 일반 고객 가입·메일·운영 검증은 준비 중입니다.'),40,y)
+    y=para(c,'로그인 후 가상 샘플과 회사 모드를 구분해 사용합니다. 샘플 입력은 브라우저에, 회사 자료는 DB에 저장합니다. 회사 자료는 회사별 소속과 역할에 따라 표시됩니다.',40,y)
     y=para(c,'실제 고객 개인정보나 민감한 파일은 공개 체험에 넣지 마세요. 모드 안내를 확인한 뒤 사용하세요.',40,y)
     y=para(c,'브라우저에서 체험하기',40,y-20,size=17,bold=True);y=para(c,p['url'],40,y,size=10,color=GREEN)
     c.linkURL(p['url'],(40,y,555,y+35),relative=0,thickness=0);c.showPage()
     for view,title,desc,steps in p['screens']:
         page+=1;shell(c,key,page,title);y=H-108;y=para(c,title,40,y,size=25,bold=True);para(c,desc,40,y,size=13,color=MUTED)
-        shot=SHOTS/(('suite-charts' if view=='suite' else key+'-'+view)+'.jpg');c.setFillColor(BG);c.roundRect(36,306,523,334,12,fill=1,stroke=0)
+        shot=guide_shot(key,view);c.setFillColor(BG);c.roundRect(36,306,523,334,12,fill=1,stroke=0)
         c.drawImage(str(shot),40,310,width=515,height=326,preserveAspectRatio=True,anchor='c',mask='auto')
         y=282
         for i,step in enumerate(steps,1):y=para(c,f'{i:02d}  {step}',40,y,size=13)
-        para(c,'화면은 PDF를 확대해 확인할 수 있습니다. 버튼·메뉴 이름은 해당 샘플 기준입니다.',40,89,size=10,color=MUTED)
+        para(c,'공통 가입 화면 예시(Flownote)입니다. 같은 아이디로 네 제품에 로그인할 수 있습니다.' if view=='account' else '화면은 PDF를 확대해 확인할 수 있습니다. 버튼·메뉴 이름은 해당 샘플 기준입니다.',40,89,size=10,color=MUTED)
         c.showPage()
     page+=1;shell(c,key,page,'제공 범위와 도입 안내');y=H-112;y=para(c,'도입 전에 확인해 주세요.',40,y,size=25,bold=True)
     for item in p['limits']:y=para(c,item,40,y-15)
     y=para(c,'도입·교육·맞춤 구축',40,y-25,size=18,bold=True);y=para(c,'회사 업무와 필요한 기능을 확인한 뒤 도입 범위·기간·비용·지원 조건을 정합니다. 이 문서는 자동 결제나 계약 체결을 실행하지 않습니다.',40,y)
-    y=para(c,'제품 자료는 2026년 11월 1일 구현 범위를 기준으로 작성했습니다. 준비 중인 기능을 완료 기능으로 안내하지 않습니다.',40,y,size=11,color=MUTED)
+    y=para(c,'제품 자료는 2026년 11월 3일 구현 범위를 기준으로 작성했습니다. 준비 중인 기능을 완료 기능으로 안내하지 않습니다.',40,y,size=11,color=MUTED)
     y=para(c,'상담: ENOTE-LABS(이노트랩스) · 텔레그램 @evanlee97',40,y-20,size=13,bold=True);c.linkURL('https://t.me/evanlee97',(40,y,555,y+35),relative=0,thickness=0);c.showPage();c.save()
     assert len(PdfReader(path).pages)==len(p['screens'])+3
-    target=PUBLIC/'manuals'/path.name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(path,target);shutil.copyfile(path,PUBLIC/'manuals'/(key+'-guide-charts-20261101.pdf'))
+    target=PUBLIC/'manuals'/path.name;target.parent.mkdir(parents=True,exist_ok=True)
+    for name in [path.name,key+'-guide-charts-20261101.pdf',key+'-guide-orange-20261031.pdf',key+'-guide-current-'+REVISION+'.pdf']:
+        shutil.copyfile(path,PUBLIC/'manuals'/name)
 
 # Draw the same identities for PNG favicons and social cards; rasterization is mechanical.
-for kind in (selected_products if '--product' in sys.argv else ['flownote','agencyflow','follonote','crewmemo','enote']):
+for kind in ([] if '--pdf-only' in sys.argv else (selected_products if '--product' in sys.argv else ['flownote','agencyflow','follonote','crewmemo','enote'])):
     raw=io.BytesIO();cc=canvas.Canvas(raw,pagesize=(64,64));logo(cc,kind,0,0,64);cc.showPage();cc.save()
     doc=pdfium.PdfDocument(raw.getvalue());im=doc[0].render(scale=4).to_pil().convert('RGBA')
     for size in [32,180]:
@@ -172,7 +213,7 @@ for kind in (selected_products if '--product' in sys.argv else ['flownote','agen
     target=(ROOT/'studio/assets/og-studio.png') if kind=='enote' else (PUBLIC/'og-agencyflow.png' if kind=='agencyflow' else PUBLIC/'product-assets'/f'{kind}-og.png');img.save(target)
     if kind=='flownote':img.save(ROOT/'demos/weekly-report/assets/og-image.jpg',quality=92)
 
-for kind in products:
+for kind in ([] if '--pdf-only' in sys.argv else products):
     shutil.copyfile(SHOTS/(kind+'-dash.jpg'),ROOT/'studio/assets'/(kind+'-screen.jpg'))
     if kind in ['follonote','crewmemo']:shutil.copyfile(SHOTS/(kind+'-dash.jpg'),PUBLIC/'product-assets'/(kind+'-screen.jpg'))
 
@@ -185,5 +226,12 @@ for path in [OUT/(key+'-guide.pdf') for key in selected_products]:
     for i,image in enumerate(pages):contact.paste(image,((i%3)*image.width,(i//3)*image.height))
     contact.save(TMP/(path.stem+'-contact.png'))
     text=''.join(p.extract_text() or '' for p in PdfReader(path).pages)
-    assert 'ENOTE-LABS' in text and '가상' in text and '제공' in text
+    normalized=''.join(text.split())
+    assert all(''.join(s.split()) in normalized for s in ['ENOTE-LABS','가상','이메일 인증은 필요하지 않습니다','2026.11.03','월 구독료'])
+    assert all(s not in normalized for s in ['이메일확인을마친','체험종료후','Lite1좌석','2026년11월1일'])
+    for index,page in enumerate(PdfReader(path).pages):
+        if index not in [1,len(doc)-1]: assert len(page.images)>0, 'Missing screen on page '+str(index+1)
+        for annotation in page.get('/Annots',[]):
+            uri=str(annotation.get_object().get('/A',{}).get('/URI',''))
+            assert uri.startswith(('https://enote-labs.vercel.app/','https://t.me/')),uri
     print(path.name,len(doc),'pages',path.stat().st_size,'bytes')

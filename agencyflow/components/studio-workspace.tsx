@@ -365,7 +365,7 @@ function StudioWorkspaceContent({ kind }: { kind: ProductKind }) {
         <div className="rail-bottom">
           <a className="button" href={"https://enote-labs.vercel.app/suite/?mode="+(demo?"demo":"cloud")+"&org="+(org?.id || (demo?"demo-org":""))}>제품 연결 ↗</a>
           <a
-            href={"/manuals/" + kind + "-guide-charts-20261101.pdf"}
+            href={"/manuals/" + kind + "-guide-current-20261103.pdf"}
             target="_blank"
             rel="noopener noreferrer"
           >

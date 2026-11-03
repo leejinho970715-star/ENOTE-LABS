@@ -42,7 +42,7 @@ export default function Home() {
               </a>
         <a
           className="button"
-          href="/manuals/agencyflow-guide-charts-20261101.pdf"
+          href="/manuals/agencyflow-guide-current-20261103.pdf"
           target="_blank"
           rel="noopener noreferrer"
         >

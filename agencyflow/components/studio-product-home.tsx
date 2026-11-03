@@ -104,7 +104,7 @@ export default function StudioProductHome({ kind }: { kind: ProductKind }) {
               </a>
             <a
               className="button"
-              href={"/manuals/" + kind + "-guide-charts-20261101.pdf"}
+              href={"/manuals/" + kind + "-guide-current-20261103.pdf"}
               target="_blank"
               rel="noopener noreferrer"
             >
