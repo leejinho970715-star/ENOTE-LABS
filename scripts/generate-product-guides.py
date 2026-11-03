@@ -98,7 +98,7 @@ products['agencyflow']['limits'].insert(0,'회사 운영 한도는 활성 프로
 products['agencyflow']['screens']=[(v,'팀 · 무료 이용' if v=='team' else t,d,['기존 가입·이메일 확인 계정을 관리자가 회사에 연결합니다. 고객은 지정 프로젝트만 조회합니다.','구현된 기능은 무료입니다. 활성 프로젝트 100개·내부 10명·시안 총 1GB·파일당 5MB의 운영 한도를 확인하세요.','팀원 접근 권한은 제품 연결과 별도로 확인합니다. 초대 메일은 자동 발송하지 않습니다.'] if v=='team' else steps) for v,t,d,steps in products['agencyflow']['screens']]
 
 # Current release: keep public guides aligned with the actual account and workflow UI.
-REVISION='20261103'
+REVISION='20261103b'
 categories={'flownote':'ERP','agencyflow':'PMS','follonote':'CRM','crewmemo':'Groupware'}
 for key,p in products.items():
     p['ko']=categories[key]
@@ -123,8 +123,19 @@ for key in ['agencyflow','follonote','crewmemo']:
     products[key]['screens'].append(('planner','운영 플래너 · 내보내기','흩어진 업무를 검색하고 월간 일정으로 봅니다.',['운영 플래너에서 검색어·종류·상태·담당자·마감 범위를 선택합니다. 목록과 월간 일정으로 전환할 수 있습니다.','현재 조회 CSV로 필터 결과를 저장합니다. 월간 일정에서는 선택 월 범위로 내보냅니다.','캘린더 파일(.ics)은 일회성 복사이며 자동 동기화가 아닙니다. 기한 초과와 완료 수치는 등록 상태·한국 날짜 기준입니다.']))
 products['follonote']['screens'].append(('timeline','고객 활동 · 중복 확인','고객과 나눈 이야기와 다음 행동을 함께 봅니다.',['고객 관리에서 고객을 선택하면 상담 기록·영업기회·후속 연락의 현재 상태를 타임라인으로 확인합니다.','중복 의심 고객은 이메일·전화·회사명 기준으로 안내하며 자동 병합하지 않습니다.','통화·메일을 자동 수집하지 않습니다. 상담 기록은 직접 작성합니다.']))
 
+for key,p in products.items():
+    p['limits']=[s.replace('구현된 기능은 월 구독료와 체험 만료 없이 무료입니다.','4개 제품의 데모 체험은 무료이며 비용은 별도로 합의한 제작 의뢰에만 발생합니다.') for s in p['limits']]
+    p['limits'].insert(0,'데모는 가상의 고객·직원·연락처·문서로 체험하세요. 실제 개인정보와 급여·계좌·민감한 계약서는 입력하지 마세요. 회사 모드 자료는 현재 호주 시드니 서버에 저장됩니다.')
+    p['screens'].append(('privacy','무료 데모 · 개인정보 안내','체험과 실제 업무 도입의 조건을 구분합니다.',['4개 제품의 데모 체험은 무료입니다. 비용은 별도로 합의한 제작 의뢰에만 발생합니다. 자동 구독이나 결제는 없습니다.','회사 모드 자료는 해외 서버에 저장됩니다. 실제 업무 도입은 보관·삭제·권한·복구 조건을 확인한 뒤 상담합니다.','삭제·탈퇴·자료 반환은 leejinho970715@gmail.com으로 요청하세요. 운영 DB·첨부파일 전체 복구 훈련은 아직 완료하지 않았습니다.']))
+products['flownote']['screens'] += [
+ ('people','직원 인사카드 · 조직도','부서와 보고 관계를 살펴보는 기초 인사 데모입니다.',['직원 · 조직도 메뉴에서 인사카드와 조직도를 전환합니다.','직원을 누르면 부서·직책·보고 담당자·가상 업무 이메일·입사일을 확인합니다.','가상 자료 조회 전용이며 실제 인사 DB는 연결하지 않았습니다. 휴가 신청·승인은 Crewmemo에 있고 급여·연차 자동 계산은 제공하지 않습니다.']),
+ ('people-org','직원 조직도 보기','보고 관계를 계층으로 확인합니다.',['직원 · 조직도 메뉴의 조직도를 선택합니다.','직원 카드를 누르면 오른쪽 인사카드가 선택 직원으로 바뀝니다.','현재는 가상 직원만 표시합니다. 실제 인사 자료와 휴가·급여 DB는 연결하지 않았습니다.']),
+ ('ledger','매출·매입 기록 · 도표','가상 거래를 월·종류·대금 상태로 확인합니다.',['조회 조건을 바꾸면 공급가액·부가세 입력값·정산 상태와 도표가 같은 범위로 바뀝니다.','현재 조회 CSV로 가상 거래 목록을 내려받습니다. 기록상 차액은 실제 순이익이나 현금 잔액이 아닙니다.','실제 회사 회계 DB·복식부기·급여·세무신고·전자세금계산서·은행 입금 확인은 제공하지 않습니다.'])]
+products['crewmemo']['screens'].append(('leave','휴가 신청 · 지정 결재자 승인','전용 양식으로 휴가 기간과 인계 내용을 전달합니다.',['내부 결재의 휴가 신청을 눌러 기간·직접 계산한 신청 일수·업무 인계 내용을 작성합니다.','다른 내부 팀원을 결재자로 지정합니다. 승인·반려는 지정 결재자가 직접 결정합니다.','연차 발생·잔여일수·자동 차감·근태 연동은 제공하지 않습니다. 진단서나 건강정보를 넣지 마세요.']))
+
 def guide_shot(key,view):
     if view=='account': return SHOTS/'account-latest.jpg'
+    if view=='privacy': return SHOTS/'privacy-latest.jpg'
     if view=='help': return SHOTS/(key+'-help-latest.jpg')
     latest=SHOTS/(key+'-'+view+'-latest.jpg')
     if latest.exists(): return latest
@@ -184,7 +195,7 @@ for key in selected_products:
         c.drawImage(str(shot),40,310,width=515,height=326,preserveAspectRatio=True,anchor='c',mask='auto')
         y=282
         for i,step in enumerate(steps,1):y=para(c,f'{i:02d}  {step}',40,y,size=13)
-        para(c,'공통 가입 화면 예시(Flownote)입니다. 같은 아이디로 네 제품에 로그인할 수 있습니다.' if view=='account' else '화면은 PDF를 확대해 확인할 수 있습니다. 버튼·메뉴 이름은 해당 샘플 기준입니다.',40,89,size=10,color=MUTED)
+        para(c,'공통 가입 화면 예시(Follonote)입니다. 같은 아이디로 네 제품에 로그인할 수 있습니다.' if view=='account' else '화면은 PDF를 확대해 확인할 수 있습니다. 버튼·메뉴 이름은 해당 샘플 기준입니다.',40,89,size=10,color=MUTED)
         c.showPage()
     page+=1;shell(c,key,page,'제공 범위와 도입 안내');y=H-112;y=para(c,'도입 전에 확인해 주세요.',40,y,size=25,bold=True)
     for item in p['limits']:y=para(c,item,40,y-15)
@@ -193,7 +204,7 @@ for key in selected_products:
     y=para(c,'상담: ENOTE-LABS(이노트랩스) · 텔레그램 @evanlee97',40,y-20,size=13,bold=True);c.linkURL('https://t.me/evanlee97',(40,y,555,y+35),relative=0,thickness=0);c.showPage();c.save()
     assert len(PdfReader(path).pages)==len(p['screens'])+3
     target=PUBLIC/'manuals'/path.name;target.parent.mkdir(parents=True,exist_ok=True)
-    for name in [path.name,key+'-guide-charts-20261101.pdf',key+'-guide-orange-20261031.pdf',key+'-guide-current-'+REVISION+'.pdf']:
+    for name in [path.name,key+'-guide-charts-20261101.pdf',key+'-guide-orange-20261031.pdf',key+'-guide-current-20261103.pdf',key+'-guide-current-'+REVISION+'.pdf']:
         shutil.copyfile(path,PUBLIC/'manuals'/name)
 
 # Draw the same identities for PNG favicons and social cards; rasterization is mechanical.
@@ -227,7 +238,7 @@ for path in [OUT/(key+'-guide.pdf') for key in selected_products]:
     contact.save(TMP/(path.stem+'-contact.png'))
     text=''.join(p.extract_text() or '' for p in PdfReader(path).pages)
     normalized=''.join(text.split())
-    assert all(''.join(s.split()) in normalized for s in ['ENOTE-LABS','가상','이메일 인증은 필요하지 않습니다','2026.11.03','월 구독료'])
+    assert all(''.join(s.split()) in normalized for s in ['ENOTE-LABS','가상','이메일 인증은 필요하지 않습니다','2026.11.03','제작 의뢰'])
     assert all(s not in normalized for s in ['이메일확인을마친','체험종료후','Lite1좌석','2026년11월1일'])
     for index,page in enumerate(PdfReader(path).pages):
         if index not in [1,len(doc)-1]: assert len(page.images)>0, 'Missing screen on page '+str(index+1)

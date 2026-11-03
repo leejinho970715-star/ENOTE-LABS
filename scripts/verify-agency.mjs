@@ -8,7 +8,7 @@ assert.equal((home.match(/<h1\b/g)||[]).length,1);
 assert(home.includes(origin+'/'));
 assert(home.includes('og-agencyflow.png')&&home.includes('favicon.svg'));
 assert(home.includes('SoftwareApplication')&&!home.includes('aggregateRating'));
-assert(home.includes('월 구독료와 체험 만료 없이') && home.includes('KRW 200,000~500,000'));
+assert(home.includes('4개 제품의 데모 체험은 무료입니다.') && home.includes('비용은 별도로 합의한 제작 의뢰에만 발생합니다.') && home.includes('KRW 200,000~500,000'));
 assert(!home.includes('월 9,900') && !home.includes('14일 검증 체험'));
 assert(workspace.includes('noindex'));
 for(const [file,w,h] of [['og-agencyflow.png',1200,630],['favicon-32.png',32,32],['apple-touch-icon.png',180,180]]){

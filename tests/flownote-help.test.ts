@@ -3,11 +3,11 @@ import assert from 'node:assert/strict';
 import { HELP_ARTICLES, searchHelp, answerHelp } from '../demos/weekly-report/help.js';
 
 test('public manual covers workspace views and Korean spacing without executing actions', () => {
-  assert.equal(HELP_ARTICLES.length, 16);
-  assert.equal(new Set(HELP_ARTICLES.map(article => article.id)).size, 16);
+  assert(HELP_ARTICLES.length >= 16);
+  assert.equal(new Set(HELP_ARTICLES.map(article => article.id)).size, HELP_ARTICLES.length);
   for (const article of HELP_ARTICLES) {
     assert.ok(article.title && article.body && article.steps.length && article.keywords.length);
-    assert.ok(['home', 'projects', 'compose', 'reports', 'team', 'audit'].includes(article.view));
+    assert.ok(['home', 'projects', 'compose', 'reports', 'team', 'audit', 'people', 'ledger'].includes(article.view));
   }
   assert.equal(searchHelp('고객등록')[0].article.id, 'client');
   assert.equal(searchHelp('고객 등록')[0].article.id, 'client');

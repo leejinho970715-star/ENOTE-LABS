@@ -15,9 +15,9 @@ assert(
 const captures = JSON.parse(await read("studio/assets/capture-manifest.json"));
 assert.equal(captures.screens.length, 4);
 for (const kind of ["flownote", "agencyflow", "follonote", "crewmemo"]) {
-  assert(html.includes("/manuals/" + kind + "-guide-current-20261103.pdf"));
+  assert(html.includes("/manuals/" + kind + "-guide-current-20261103b.pdf"));
   const pdf = await readFile(
-    new URL("dist/manuals/" + kind + "-guide-current-20261103.pdf", root),
+    new URL("dist/manuals/" + kind + "-guide-current-20261103b.pdf", root),
   );
   assert.equal(pdf.toString("ascii", 0, 5), "%PDF-");
 }

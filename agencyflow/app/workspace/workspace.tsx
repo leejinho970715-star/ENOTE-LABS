@@ -415,7 +415,7 @@ function WorkspaceContent() {
         <div className="rail-bottom">
           {!clientView && <a className="button" href={"https://enote-labs.vercel.app/suite/?mode="+(demo?"demo":"cloud")+"&org="+(org?.id || (demo?"demo-org":""))}>제품 연결 ↗</a>}
           <a
-            href="/manuals/agencyflow-guide-current-20261103.pdf"
+            href="/manuals/agencyflow-guide-current-20261103b.pdf"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -479,7 +479,7 @@ function WorkspaceContent() {
             <span>
               {demo
                 ? "이 브라우저에만 저장됩니다. 실제 팀·고객과 공유되지 않으며 역할 전환은 시연용입니다."
-                : "로그인한 회사의 데이터에 저장됩니다. 결제는 준비 중입니다. 익명화 자료로 검증하세요."}
+                : "데모 체험은 무료입니다. 회사 모드 자료는 해외 DB에 저장되므로 가상 자료로 검증하세요."}
             </span>
           </div>
           {error && (
@@ -1871,7 +1871,7 @@ function WorkspaceContent() {
                   <section className="panel">
                     <span className="eyebrow">FREE ACCESS</span>
                     <h2>무료 이용 · 구현된 기능 전체</h2>
-                    <p>월 구독료 없이 사용할 수 있습니다. 회사별 권한과 자료 보관 기준은 유지합니다.</p>
+                    <p>데모 체험은 무료이며 제작 의뢰만 별도 합의한 비용이 발생합니다. 회사별 권한과 운영 한도는 유지합니다.</p>
                     <p className="muted">운영 한도: 활성 프로젝트 100개 · 내부 구성원 10명 · 시안 저장 총 1GB · 파일당 5MB. 확장이 필요하면 맞춤 구축으로 상담하세요.</p>
                     <a className="button primary" href="https://enote-labs.vercel.app/#pricing" target="_blank" rel="noreferrer">맞춤 제작비 보기 ↗</a>
                   </section>

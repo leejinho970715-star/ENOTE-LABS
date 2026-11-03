@@ -21,7 +21,7 @@ export default function ProductGuide({product,onNavigate,internal=true}:{product
    </div>
    <div className="pg-suggestions" aria-label="추천 도움말">{topics.slice(0,3).map(t=><button key={t.id} onClick={()=>ask(t.title)}>{t.title}</button>)}</div>
    <form onSubmit={submit}><label className="pg-sr" htmlFor="product-guide-question">사용법 질문</label><input ref={input} id="product-guide-question" value={question} onChange={e=>setQuestion(e.target.value)} maxLength={300} autoComplete="off" placeholder="사용 방법을 물어보세요" required/><button className="button primary" aria-label="가이드에 질문하기">↑</button></form>
-   <div className="pg-links"><button onClick={()=>setBrowse(!browse)}>{browse?'질문으로 돌아가기':'전체 사용법'}</button><a className="button" href={'/manuals/'+pdf+'-guide-current-20261103.pdf'} target="_blank" rel="noopener noreferrer">제품소개서 보기 ↗</a></div>
+   <div className="pg-links"><button onClick={()=>setBrowse(!browse)}>{browse?'질문으로 돌아가기':'전체 사용법'}</button><a className="button" href={'/manuals/'+pdf+'-guide-current-20261103b.pdf'} target="_blank" rel="noopener noreferrer">제품소개서 보기 ↗</a></div>
    <p className="pg-safety">비밀번호나 고객 자료는 입력하지 마세요.<br/>질문은 서버에 전송·저장하지 않습니다.</p>
   </dialog>
  </>;

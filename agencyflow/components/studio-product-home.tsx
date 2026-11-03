@@ -104,7 +104,7 @@ export default function StudioProductHome({ kind }: { kind: ProductKind }) {
               </a>
             <a
               className="button"
-              href={"/manuals/" + kind + "-guide-current-20261103.pdf"}
+              href={"/manuals/" + kind + "-guide-current-20261103b.pdf"}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -179,7 +179,7 @@ export default function StudioProductHome({ kind }: { kind: ProductKind }) {
             applicationCategory: "BusinessApplication",
             operatingSystem: "Web",
             url: studioOrigin + "/" + kind + "/",
-            description: p.description + " · 초기 검증판 · 결제 준비 중",
+            description: p.description + " · 무료 데모 · 제작 의뢰 별도",
           }).replaceAll("<", "\\u003c"),
         }}
       />

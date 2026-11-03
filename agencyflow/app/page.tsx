@@ -42,7 +42,7 @@ export default function Home() {
               </a>
         <a
           className="button"
-          href="/manuals/agencyflow-guide-current-20261103.pdf"
+          href="/manuals/agencyflow-guide-current-20261103b.pdf"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -120,7 +120,7 @@ export default function Home() {
         </section>
         <section id="pricing" className="public-section">
           <span className="eyebrow">FREE TO EXPLORE</span><h2>먼저 무료로, 우리 업무에 맞는지 확인하세요.</h2>
-          <p>구현된 프로젝트·작업·피드백·견적 기능은 월 구독료와 체험 만료 없이 이용할 수 있습니다.</p>
+          <p>4개 제품의 데모 체험은 무료입니다. 비용은 별도로 합의한 제작 의뢰에만 발생합니다.</p>
           <div className="actions"><a href="/workspace/" className="button primary">무료 데모 열기</a><a href="https://enote-labs.vercel.app/#pricing" className="button">맞춤 제작 KRW 200,000~500,000 ↗</a></div>
           <p className="muted">회사 공유는 로그인·팀 권한이 필요합니다. 활성 프로젝트 100개·내부 10명·시안 총 1GB, 파일당 5MB의 운영 한도가 있습니다. 맞춤 제작비는 부가세 별도이며 호스팅·외부 서비스 사용료는 별도입니다.</p>
         </section>
@@ -153,7 +153,7 @@ export default function Home() {
             <summary>지금 실제 고객 자료를 넣어도 되나요?</summary>
             <p>
               회사별 권한 분리와 비공개 시안 저장을 구현한 초기 검증판입니다.
-              결제·운영 복구 검증과 국외 개인정보 처리 조건의 운영 확인이 남아
+              운영 복구 검증과 국외 개인정보 처리 조건의 운영 확인이 남아
               있습니다. 우선 익명화한 자료로 검증하세요.
             </p>
           </details>
@@ -188,7 +188,7 @@ export default function Home() {
                 operatingSystem: "Web",
                 url: origin,
                 description:
-                  "다양한 업종의 프로젝트·일정·작업 진척과 자료 피드백을 관리하는 PMS. 초기 검증판이며 결제·자동 웹 검수는 준비 중.",
+                  "다양한 업종의 프로젝트·일정·작업 진척과 자료 피드백을 관리하는 PMS. 무료 데모이며 실제 제작은 별도 상담. 자동 웹 검수는 미지원.",
               },
             ],
           }).replaceAll("<", "\\u003c"),

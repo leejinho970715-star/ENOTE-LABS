@@ -365,7 +365,7 @@ function StudioWorkspaceContent({ kind }: { kind: ProductKind }) {
         <div className="rail-bottom">
           <a className="button" href={"https://enote-labs.vercel.app/suite/?mode="+(demo?"demo":"cloud")+"&org="+(org?.id || (demo?"demo-org":""))}>제품 연결 ↗</a>
           <a
-            href={"/manuals/" + kind + "-guide-current-20261103.pdf"}
+            href={"/manuals/" + kind + "-guide-current-20261103b.pdf"}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -434,7 +434,7 @@ function StudioWorkspaceContent({ kind }: { kind: ProductKind }) {
             <span>
               {demo
                 ? "입력 내용은 이 브라우저에만 저장됩니다. 담당자 전환은 권한 흐름 시연이며 실제 다른 사용자와 공유되지 않습니다."
-                : "회사 내부 팀원의 자료만 조회·저장합니다. 결제·외부 자동 연동은 준비 중입니다."}
+                : "데모 체험은 무료입니다. 가상 자료로 확인하고 실제 업무 제작은 별도로 상담하세요."}
             </span>
           </div>
           {error && (
