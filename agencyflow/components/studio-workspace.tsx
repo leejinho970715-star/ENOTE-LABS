@@ -1082,6 +1082,7 @@ function StudioWorkspaceContent({ kind }: { kind: ProductKind }) {
                 </section>
               )}
               {!crm && view === "approvals" && <div className="approval-templates">{[
+                {title:'휴가 신청',body:'신청자(표시 이름): \n휴가 종류: \n신청 시작일: \n신청 종료일: \n신청 일수(직접 입력): \n업무 인계 사항: \n※ 건강정보·진단서는 입력하지 마세요. 연차 자동 계산·차감 기능은 아닙니다.'},
                 {title:'비용 사용 요청',body:'사용 목적: \n예정 금액(KRW): \n사용 예정일: \n검토할 근거: '},
                 {title:'외부 업무 요청',body:'요청 목적: \n업체·담당자: \n업무 범위: \n예정 기간: \n검토할 근거: '},
                 {title:'프로젝트 변경 요청',body:'프로젝트: \n변경 이유: \n변경 범위·일정: \n고객 확인 사항: '}

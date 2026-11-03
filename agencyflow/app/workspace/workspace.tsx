@@ -1201,11 +1201,11 @@ function WorkspaceContent() {
                               이미지 파일
                               <input
                                 name="file"
-                                type="file"
+                                aria-describedby="upload-privacy-notice" type="file"
                                 accept="image/png,image/jpeg,image/webp"
                                 required
                               />
-                            </label>
+                            </label><p id="upload-privacy-notice" className="muted">가상 이미지로 체험해 주세요. 고객 얼굴·연락처·신분증·민감한 계약서는 올리지 마세요. 회사 모드 파일은 해외 서버에 저장됩니다.</p>
                             <button className="button primary" disabled={busy}>
                               새 버전 업로드
                             </button>

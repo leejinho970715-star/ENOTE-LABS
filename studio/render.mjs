@@ -1,3 +1,4 @@
+import {demoOffer,demoPrivacy,cloudNotice} from '../shared/service-notice.js';
 import { legalFooter, legalDialogs } from "./legal.mjs";
 const origin = "https://enote-labs.vercel.app";
 const metaTitle = "ENOTE-LABS | ERP·PMS·CRM·그룹웨어와 맞춤 업무 시스템";
@@ -20,7 +21,7 @@ export const products = [
     desc: "고객과 프로젝트의 진행 상황을 정리하고, 보고할 내용을 한곳에서 확인하세요. 작은 대행사의 반복 보고 업무부터 시작합니다.",
     items: [
       "고객·프로젝트 현황 정리",
-      "CSV 검사·서버 합계 재계산·버전 저장",
+      "직원 인사카드·조직도·매출매입 가상 기록",
       "독립 검수·승인본 HTML·CSV 내보내기",
     ],
     note: "체험판 · 외부 광고 계정 자동 수집은 별도 연동 범위",
@@ -115,6 +116,8 @@ const digitalServices = [
 ];
 const digitalSection = `<section class="section digital-section wrap" id="digital">${heading("DIGITAL SALES & KNOWLEDGE", "잘 만든 자료도,<br><em>일을 이어주는 도구입니다.</em>", "업무 시스템에서 고객에게 전할 자료까지.<br>영업에 쓰는 전자 카탈로그와 교육에 쓰는 E-book을 제작합니다.")}<div class="digital-grid">${digitalServices.map(p=>`<article class="digital-card reveal"><span class="digital-symbol" aria-hidden="true">${clay(p.icon)}</span><span class="eyebrow">${p.tag}</span><h3>${p.name}</h3><p>${p.desc}</p><strong class="digital-price">${p.price}</strong><ul>${p.items.map(t=>`<li>${t}</li>`).join("")}</ul><p class="digital-use">${p.use}</p>${btn("제작 범위 상담 ↗","#contact","white")}</article>`).join("")}</div><p class="caption">1회 제작비 · 부가세 별도. 호스팅·도메인·유료 이미지·추가 수정은 별도 협의합니다.<br>열람 통계, CRM 연결, 정기 업데이트는 필요한 경우 별도 범위로 상담합니다.</p></section>`;
 const faq = [
+  ["실제 고객이나 직원의 개인정보를 넣어도 되나요?", "현재 데모는 가상의 고객·직원·연락처·문서로 체험해 주세요. 회사 모드에 입력한 자료는 현재 호주 시드니 서버에 저장됩니다. 실제 업무 도입은 보관·삭제·권한·복구 조건을 확인한 뒤 상담합니다. 삭제·탈퇴·자료 반환은 leejinho970715@gmail.com으로 요청하고, 비밀번호나 신분증 전체 사진은 보내지 마세요."],
+  ["Flownote의 인사·회계는 어디까지 되나요?", "직원 인사카드·조직도와 매출·매입 기록은 가상 자료를 조회하는 데모입니다. 휴가 신청·승인 양식은 Crewmemo에 있습니다. 실제 회사 인사 DB, 연차 자동 계산·차감, 급여·복식부기·세무신고·은행 입금 확인은 포함하지 않습니다."],
   ["전자 카탈로그와 E-book은 무엇을 제공하나요?", "전자 카탈로그는 보유 PDF의 웹 열람 페이지 또는 상품·서비스 소개용 반응형 웹 페이지, E-book은 제품 매뉴얼·고객 교육 자료를 담은 PDF입니다. 제공 원고와 이미지를 바탕으로 제작하며 집필·출판 유통·관리자·결제 기능은 기본 범위에 포함되지 않습니다."],
   [
     "PMS, ERP, GW(그룹웨어), CRM은 어떻게 다른가요?",
@@ -134,7 +137,7 @@ const faq = [
   ],
   [
     "지금 바로 결제하고 사용할 수 있나요?",
-    "제품과 샘플의 구현된 기능은 로그인 후 무료로 사용할 수 있습니다. 이름·아이디·비밀번호로 가입하면 바로 제품에 로그인할 수 있습니다. 회사 공유나 맞춤 제작은 상담해 주세요.",
+    "4개 제품의 데모 체험은 무료입니다. 비용은 별도로 합의한 제작 의뢰에만 발생합니다. 체험만으로 결제되거나 구독료가 청구되지 않습니다. 가상 자료로 확인한 뒤 제작 범위를 상담하세요.",
   ],
   [
     "기존 엑셀이나 사용 중인 서비스를 연결할 수 있나요?",
@@ -216,7 +219,7 @@ ${digitalSection}
  {tag:'START',title:'화면·양식 맞춤',price:'KRW 200,000',desc:'데모 화면 한 곳을 우리 업무에 맞게 바꿉니다.',items:['필드·문구·컬러 조정','목록 또는 입력 양식 1개','수정 1회 · 사용 안내']},
  {tag:'WORKFLOW',title:'작은 업무 흐름 구축',price:'KRW 350,000',desc:'고객 등록부터 업무 확인까지 짧은 흐름을 만듭니다.',items:['기존 데모 기반 화면 최대 2개','기존 기능의 입력·조회 흐름 조정','수정 2회 · 사용 안내']},
  {tag:'CONNECT',title:'업무 연결 맞춤',price:'KRW 500,000',desc:'데모의 연관 기능을 회사 방식에 맞춰 연결합니다.',items:['기존 데모 기반 화면 최대 3개','기존 데이터 연결 1개 흐름','검수 기준·인수 범위 사전 합의']}
-].map((p,i)=>`<article class="price-card ${i===1?'featured':''} reveal"><span class="eyebrow">${p.tag}</span><h3>${p.title}</h3><div class="price text-price">${p.price}</div><p>${p.desc}</p><ul>${p.items.map(t=>`<li>${t}</li>`).join('')}</ul>${btn('맞춤 제작 상담','#contact',i===1?'orange':'white')}</article>`).join('')}</div><p class="caption">부가세 별도 · 계약 전 범위와 총액을 확정합니다. 신규 대규모 ERP, 외부 API·AI 사용료, 호스팅·도메인·유지관리는 위 제작비에 포함되지 않습니다.</p><div class="subscription-note reveal"><b>로그인 후 4개 제품의 구현된 기능을 무료로 체험하세요.</b><p>월 구독료와 체험 만료 없이 살펴볼 수 있습니다. 회사 공유는 로그인과 팀 권한이 필요하며 저장공간·등록량에는 운영 한도가 있습니다.</p>${btn('로그인 후 인수인계 점검','/suite/','white small')}</div></section>
+].map((p,i)=>`<article class="price-card ${i===1?'featured':''} reveal"><span class="eyebrow">${p.tag}</span><h3>${p.title}</h3><div class="price text-price">${p.price}</div><p>${p.desc}</p><ul>${p.items.map(t=>`<li>${t}</li>`).join('')}</ul>${btn('맞춤 제작 상담','#contact',i===1?'orange':'white')}</article>`).join('')}</div><p class="caption">부가세 별도 · 계약 전 범위와 총액을 확정합니다. 신규 대규모 ERP, 외부 API·AI 사용료, 호스팅·도메인·유지관리는 위 제작비에 포함되지 않습니다.</p><div class="subscription-note reveal"><b>${demoOffer}</b><p>${demoPrivacy} 제작 전 범위·총액·수정 횟수·납품 조건을 합의합니다. 자동 결제나 구독료는 없습니다.</p>${btn('로그인 후 인수인계 점검','/suite/','white small')}</div></section>
 <section class="section faq wrap" id="faq">${heading("QUESTIONS, ANSWERED", "자주 묻는 질문")}<div class="faq-list reveal">${faq.map(([t, d]) => `<details><summary>${t}</summary><p>${d}</p></details>`).join("")}</div></section>
 <section class="contact-section wrap reveal" id="contact"><div><span class="eyebrow">LET'S MAKE WORK FLOW</span><h2>필요한 업무나 자료,<br>하나만 알려주세요.</h2><p>“고객에게 보여줄 상품 소개 자료가 필요해요.”<br>이 정도의 설명이면 시작하기 충분합니다.</p><a class="btn orange" href="https://t.me/evanlee97" target="_blank" rel="noopener noreferrer">텔레그램으로 문의 ↗</a><a class="btn white contact-email" href="mailto:leejinho970715@gmail.com?subject=ENOTE-LABS%20%EB%8F%84%EC%9E%85%20%EC%83%81%EB%8B%B4">이메일로 문의 ↗</a><small>이메일 또는 텔레그램으로 직접 상담합니다.</small></div><form id="inquiry"><label>관심 있는 제품 또는 업무<select name="product"><option>어떤 제품이 맞을지 상담</option><option>Flownote · 보고 자동화</option><option>ProjectFlow · 프로젝트 관리</option><option>Follonote · 영업 CRM</option><option>Crewmemo · 그룹웨어</option><option>ERP·PMS·CRM 맞춤 구축</option><option>전자 카탈로그 구축</option><option>E-book 제작 · 매뉴얼·교육 자료</option></select></label><label>현재 가장 불편한 일<textarea name="problem" rows="4" placeholder="지금 쓰는 도구와 반복되는 일을 적어주세요." required maxlength="2000"></textarea></label><button class="btn dark" type="submit">문의 내용 복사하기 ⧉</button><p id="form-status" role="status">내용은 서버로 전송되지 않습니다. 복사한 뒤 이메일 또는 텔레그램에 직접 보내주세요.</p></form></section>
 <section class="bottom-cta"><div class="glow"></div><span class="eyebrow">YOUR TEAM, IN FLOW.</span><h2>일이 쌓이는 곳에서,<br><em>일이 흐르는 곳으로.</em></h2>${btn("우리 팀의 첫 제품 찾기 ↗", "#products", "orange")}<div class="bottom-objects" aria-hidden="true"><span>${clay("report")}</span><span>${clay("crm")}</span><span>${clay("check")}</span></div></section></main><footer class="footer wrap"><a class="brand" href="/"><img src="/assets/enote-labs-logo-20261031.webp" alt="" width="44" height="44">ENOTE-LABS<span>이노트랩스</span></a><p>팀의 업무를 이해하고, 쓰이는 시스템을 만듭니다.</p><div>${products.map((p) => `<a href="${p.url}">${p.name} ↗</a>`).join("")}<a href="https://t.me/evanlee97">문의 ↗</a></div><address class="footer-contact">대표자 : 이은규<br>문의 : <a href="mailto:leejinho970715@gmail.com">leejinho970715@gmail.com</a> / telegram : <a href="https://t.me/evanlee97" target="_blank" rel="noopener noreferrer">@evanlee97</a></address><a class="admin-entry" href="/admin/">관리자 입장 ↗</a>${legalFooter}<small>2026.10 ENOTE-LABS ALL RIGHTS RESERVED</small></footer>${legalDialogs}<dialog id="screen-dialog" class="screen-dialog" aria-labelledby="screen-dialog-title" aria-describedby="screen-dialog-hint"><header><h2 id="screen-dialog-title">제품 화면</h2><button type="button" data-screen-close aria-label="제품 화면 닫기">닫기 ×</button></header><div class="screen-dialog-body"><button type="button" class="screen-image-close" data-screen-close aria-label="이미지를 클릭하여 닫기"><img alt="제품 가상 샘플 화면"></button><p data-screen-error hidden>이미지를 불러오지 못했습니다. 닫은 뒤 다시 시도해 주세요.</p></div><p id="screen-dialog-hint">이미지 또는 바깥 배경을 클릭하거나 Escape 키를 누르면 닫힙니다.</p></dialog></body></html>`;
