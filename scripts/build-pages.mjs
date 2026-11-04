@@ -79,5 +79,7 @@ await writeFile(new URL('csv-app.js',output),(await read('app.js')).replaceAll('
 await writeFile(new URL('app.js',output),`import {requireProductLogin} from './auth-gate.js';if(await requireProductLogin('${base}'))await import('./csv-app.js');`);
 await build({entryPoints:[fileURLToPath(new URL('auth-gate.js',source))],outfile:fileURLToPath(new URL('auth-gate.js',output)),bundle:true,minify:true,format:'esm',target:'es2020'});
 await writeFile(new URL('.nojekyll',output),'');
-await import('./build-landing.mjs');
+const workspaceEntry=origin.endsWith('.github.io')?'https://enote-labs.vercel.app/flownote/workspace/':base+'workspace/';
+await writeFile(new URL('index.html',output),`<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,follow"><title>Flownote 워크스페이스</title><script>location.replace(${JSON.stringify(workspaceEntry)}+location.search+location.hash)</script><noscript><meta http-equiv="refresh" content="0;url=${workspaceEntry}"></noscript></head><body><main><p><a href="${workspaceEntry}">Flownote 워크스페이스 열기</a></p></main></body></html>`);
+await writeFile(new URL('robots.txt',output),'User-agent: *\nAllow: /\n');
 process.stdout.write(`Public site built: dist/ at ${origin}${base} (no customer data, database files or secret keys)\n`);

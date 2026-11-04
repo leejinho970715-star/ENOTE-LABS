@@ -7,7 +7,7 @@ const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8'
 http.createServer(async(req,res)=>{
  try{
   if(!['GET','HEAD'].includes(req.method)){res.writeHead(405);res.end();return;}
-  const route=decodeURIComponent(new URL(req.url,'http://localhost').pathname).replace(/^\/flow-note(?=\/|$)/,'').replace(/^\/+/, '');
+  const route=decodeURIComponent(new URL(req.url,'http://localhost').pathname).replace(/^\/(?:flow-note|ENOTE-LABS)(?=\/|$)/,'').replace(/^\/+/, '');
   let file=path.resolve(root,route||'index.html');
   if(!file.startsWith(root)){res.writeHead(403);res.end();return;}
   if((await stat(file)).isDirectory())file=path.join(file,'index.html');

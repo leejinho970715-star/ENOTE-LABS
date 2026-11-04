@@ -6,3 +6,13 @@
 #auth-message:focus{outline:2px solid #b44e1c;outline-offset:3px}
 
 .cloud-report-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.cloud-preview{padding:22px;margin-top:24px;border:1px solid var(--line);border-radius:12px}.cloud-preview details{max-height:230px;overflow:auto}.cloud-preview .check{align-items:start}.account-page .actions{display:flex;gap:12px;flex-wrap:wrap}.account-page .report-item{width:100%}.account-page .mini-stats b{white-space:normal;overflow-wrap:anywhere}@media(max-width:680px){.cloud-report-list{grid-template-columns:minmax(0,1fr)}.account-page .pair{grid-template-columns:minmax(0,1fr)}.account-page .actions>.button{flex:1 1 150px}}
+.account-guide-toggle{position:fixed;right:24px;bottom:max(24px,env(safe-area-inset-bottom));z-index:15;display:flex;align-items:center;gap:10px;min-height:44px;border:1px solid #3e2715;border-radius:30px;padding:6px 16px 6px 9px;background:#3e2715;color:#fff;font-size:15px}
+.account-guide-toggle>span{display:grid;place-items:center;width:29px;height:29px;border-radius:50%;background:#f3c599;color:#3e2715;font-weight:700}
+.account-guide-dialog{width:min(32rem,calc(100% - 2rem));max-height:80dvh;overflow:auto;border:1px solid #d3bca8;border-radius:16px;padding:1.25rem;color:#3e2715}
+.account-guide-dialog::backdrop{background:#211a1580}
+.account-guide-dialog header{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:.75rem}
+.account-guide-dialog h2,.account-guide-dialog details p{margin:.5rem 0}
+.account-guide-dialog summary{cursor:pointer;font-weight:700}
+.account-guide-dialog details{padding:.65rem 0;border-top:1px solid #e7d9cf}
+.account-guide-dialog a{margin-top:.75rem}
+@media(max-width:640px){.account-guide-toggle{right:15px;bottom:max(15px,env(safe-area-inset-bottom))}}

@@ -59,11 +59,11 @@ assert(html.includes("아직") || html.includes("준비 중"));
 for (const kind of ["follonote", "crewmemo"]) {
   const home = await read("agencyflow/out/" + kind + "/index.html"),
     app = await read("agencyflow/out/" + kind + "/workspace/index.html");
-  assert(home.includes("https://flownote-studio.vercel.app/" + kind + "/"));
-  assert(home.includes("/product-assets/" + kind + "-og.png"));
+  assert(home.includes('href="/' + kind + '/workspace/"') && home.includes("noindex"));
+  assert(app.includes("/product-assets/" + kind + "-og.png"));
   assert(app.includes("noindex"));
   assert(
-    app.includes("https://flownote-studio.vercel.app/" + kind + "/workspace/"),
+    app.includes("https://enote-labs.vercel.app/" + kind + "/workspace/"),
   );
   await read("agencyflow/public/product-assets/" + kind + "-icon.svg");
   const png = await readFile(
@@ -94,4 +94,4 @@ assert((await read("dist/admin/index.html")).includes("noindex"));
 assert((await read("dist/flownote/workspace/index.html")).includes('class="auth-pending"'));
 assert((await read("dist/flownote/workspace.js")).includes("requireProductLogin('/flownote/')"));
 assert((await read("dist/flownote/account.js")).includes("agencyflow-auth-v1"));
-assert((await read("dist/flownote/index.html")).includes('href="https://enote-labs.vercel.app/flownote/"'));
+assert((await read("dist/flownote/index.html")).includes('href="/flownote/workspace/"'));

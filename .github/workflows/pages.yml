@@ -31,6 +31,7 @@ jobs:
         env:
           STUDIO_SKIP_NEXT: '1'
       - run: node scripts/verify-studio.mjs
+      - run: rm -rf dist
       - run: npm run build
       - run: npm run verify:pages
       - uses: actions/configure-pages@v5

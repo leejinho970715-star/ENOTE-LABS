@@ -1,3 +1,3 @@
-import StudioProductHome,{productMetadata} from '../../components/studio-product-home';
-export const metadata=productMetadata('follonote');
-export default function Page(){return <StudioProductHome kind="follonote"/>;}
+import WorkspaceEntry from "../../components/workspace-entry";
+export const metadata = { robots: { index: false, follow: true } };
+export default function Page() { return <WorkspaceEntry destination="/follonote/workspace/" />; }

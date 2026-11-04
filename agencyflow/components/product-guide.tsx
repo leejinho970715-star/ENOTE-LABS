@@ -7,12 +7,12 @@ export default function ProductGuide({product,onNavigate,internal=true}:{product
  const dialog=useRef<HTMLDialogElement>(null),input=useRef<HTMLInputElement>(null),thread=useRef<HTMLDivElement>(null);
  const topics=guideTopics(product,internal),name=guideNames[product],pdf=product==='projectflow'?'agencyflow':product;
  useEffect(()=>{if(!open)return;const el=dialog.current;if(!el)return;const overflow=document.body.style.overflow;document.body.style.overflow='hidden';el.showModal();input.current?.focus();return()=>{el.close();document.body.style.overflow=overflow;};},[open]);
- useEffect(()=>{if(open&&thread.current)thread.current.scrollTop=thread.current.scrollHeight;},[messages,open]);
+ useEffect(()=>{if(open&&thread.current)thread.current.scrollTop=browse?0:thread.current.scrollHeight;},[messages,open,browse]);
  function ask(value:string){const q=value.trim().slice(0,300);if(!q)return;setBrowse(false);setMessages(previous=>[...previous,{question:q,topics:searchGuide(product,q,internal)}].slice(-5));setQuestion('');input.current?.focus();}
  function submit(e:FormEvent){e.preventDefault();ask(question);}
  function article(t:GuideTopic){return <article className="pg-article" key={t.id}><h3>{t.title}</h3><ol>{t.steps.map(step=><li key={step}>{step}</li>)}</ol>{t.view&&<button onClick={()=>{onNavigate(t.view!);setOpen(false);}}>해당 메뉴 열기 →</button>}{t.href&&<a className="button" href={t.href} target="_blank" rel="noopener noreferrer">제품 연결 열기 ↗</a>}</article>}
  return <>
-  <button className="pg-fab" onClick={()=>setOpen(true)} aria-haspopup="dialog" aria-expanded={open} aria-controls="product-guide-dialog"><span aria-hidden="true">?</span> 사용 가이드</button>
+  <button className="pg-fab" type="button" onClick={()=>setOpen(true)} aria-haspopup="dialog" aria-expanded={open} aria-controls="product-guide-dialog"><span aria-hidden="true">?</span> 사용 가이드</button>
   <dialog ref={dialog} id="product-guide-dialog" className="pg-dialog" aria-labelledby="product-guide-title" onCancel={()=>setOpen(false)} onClose={()=>setOpen(false)}>
    <header><div><span className="eyebrow">{name.toUpperCase()} GUIDE</span><h2 id="product-guide-title">사용법 찾기</h2></div><button className="pg-close" aria-label="사용 가이드 닫기" onClick={()=>setOpen(false)}>×</button></header>
    <div className="pg-description"><b>매뉴얼에서 관련 안내를 찾아드립니다.</b><p>문서 검색 기반 · 외부 AI 사용 안 함<br/>회사 자료 조회·업무 실행은 하지 않습니다.</p></div>

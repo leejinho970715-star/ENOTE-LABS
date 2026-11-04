@@ -13,28 +13,10 @@ assert(!html.includes('__FLOWNOTE_ORIGIN__'));
 assert(workspace.includes(origin+base+'assets/og-image.jpg'));
 assert(workspace.includes(origin+base+'workspace/'));
 assert((await read('csv-app.js')).includes(`href="${base}workspace/"`));
-assert.equal((html.match(/<h1\b/g)||[]).length,1);
-assert(html.includes('rel="canonical" href="'+origin+base+'"'));
-assert(html.includes('https://t.me/evanlee97'));
-assert(html.includes(origin+base+'marketing/og-flownote.png'));
-assert(html.includes('property="og:image:height" content="630"'));
-for(const [file,width,height] of [['og-flownote.png',1200,630],['favicon-32.png',32,32],['apple-touch-icon.png',180,180]]){
- const png=await readFile(new URL('marketing/'+file,root));
- assert.equal(png.subarray(1,4).toString(),'PNG');
- assert.equal(png.readUInt32BE(16),width,file+' width');assert.equal(png.readUInt32BE(20),height,file+' height');
-}
-assert(html.includes('marketing/favicon.svg')&&html.includes('marketing/favicon.ico'));
-
-assert(html.includes('KRW 200,000')&&html.includes('KRW 350,000')&&html.includes('KRW 500,000'));
-assert(!html.includes('월 5만')&&!html.includes('총 59만'));
-assert(html.includes('월 구독료가 아닌 1회 맞춤 제작비'));
-assert(html.includes('자동 전송·접수되지 않습니다.'));
-assert(!/__BASE__|__SCHEMA__|__FAQ_HTML__|__CANONICAL__|__IMAGE_URL__/.test(html));
-const schema=JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
-assert(schema['@graph'].some(item=>item['@type']==='Service'));
-assert(!JSON.stringify(schema).includes('aggregateRating'));
-assert((await read('robots.txt')).includes('Sitemap: '+origin+base+'sitemap.xml'));
-assert((await read('sitemap.xml')).includes('<loc>'+origin+base+'</loc>'));
+assert(html.includes('noindex,follow'));
+const workspaceEntry=origin.endsWith('.github.io')?'https://enote-labs.vercel.app/flownote/workspace/':base+'workspace/';
+assert(html.includes('href="'+workspaceEntry+'"'));
+assert(html.includes('location.search+location.hash'));
 const fixture=JSON.parse(await read('sample-workspace.json'));
 assert.equal(fixture.state.user.role,'viewer');
 assert.equal(fixture.state.projects.length,3);

@@ -371,7 +371,7 @@ function WorkspaceContent() {
   return (
     <div className="app-shell">
       <aside className="app-rail">
-        <a className="af-brand" href="/">
+        <a className="af-brand" href="https://enote-labs.vercel.app/#projectflow">
           <img src="/favicon.svg" alt="" />
           <span className="brand-copy">
             ProjectFlow<small>PMS · Project &amp; Feedback</small>
@@ -421,7 +421,7 @@ function WorkspaceContent() {
           >
             제품소개서 보기 ↗
           </a>
-          <a href="/">← 서비스 소개</a>
+          <a href="https://enote-labs.vercel.app/#projectflow">← 서비스 소개</a>
           <button onClick={() => setDark(!dark)}>
             {dark ? "☀ 라이트 모드" : "◐ 다크 모드"}
           </button>
