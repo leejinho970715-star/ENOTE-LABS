@@ -1,0 +1,11 @@
+.git
+.env
+.env.*
+!.env.example
+node_modules
+.next
+data
+test-results
+out-pages
+*.log
+CEO-시작-안내.txt
