@@ -7,7 +7,11 @@ export default function ProductGuide({product,onNavigate,internal=true}:{product
  const dialog=useRef<HTMLDialogElement>(null),input=useRef<HTMLInputElement>(null),thread=useRef<HTMLDivElement>(null);
  const topics=guideTopics(product,internal),name=guideNames[product],pdf=product==='projectflow'?'agencyflow':product;
  useEffect(()=>{if(!open)return;const el=dialog.current;if(!el)return;const overflow=document.body.style.overflow;document.body.style.overflow='hidden';el.showModal();input.current?.focus();return()=>{el.close();document.body.style.overflow=overflow;};},[open]);
- useEffect(()=>{if(open&&thread.current)thread.current.scrollTop=browse?0:thread.current.scrollHeight;},[messages,open,browse]);
+ useEffect(() => {
+   const panel = thread.current;
+   if (!open || !panel) return;
+   panel.scrollTop = browse || messages.length === 0 ? 0 : panel.scrollHeight;
+ }, [messages, open, browse]);
  function ask(value:string){const q=value.trim().slice(0,300);if(!q)return;setBrowse(false);setMessages(previous=>[...previous,{question:q,topics:searchGuide(product,q,internal)}].slice(-5));setQuestion('');input.current?.focus();}
  function submit(e:FormEvent){e.preventDefault();ask(question);}
  function article(t:GuideTopic){return <article className="pg-article" key={t.id}><h3>{t.title}</h3><ol>{t.steps.map(step=><li key={step}>{step}</li>)}</ol>{t.view&&<button onClick={()=>{onNavigate(t.view!);setOpen(false);}}>해당 메뉴 열기 →</button>}{t.href&&<a className="button" href={t.href} target="_blank" rel="noopener noreferrer">제품 연결 열기 ↗</a>}</article>}
