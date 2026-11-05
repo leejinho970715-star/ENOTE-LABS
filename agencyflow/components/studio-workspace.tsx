@@ -1,6 +1,6 @@
 "use client";
 import {loginAddress} from '../../shared/identity.js';
-import ProductAccess from "./product-access";
+import ProductAccess, { DemoNotice } from "./product-access";
 import {
   useState,
   useEffect,
@@ -62,7 +62,7 @@ function Field({
     </label>
   );
 }
-export default function StudioWorkspace({kind}:{kind:ProductKind}){return <ProductAccess name={productInfo[kind].name}><StudioWorkspaceContent kind={kind}/></ProductAccess>;}
+export default function StudioWorkspace({kind}:{kind:ProductKind}){return <ProductAccess name={productInfo[kind].name} noticeInWorkspace><StudioWorkspaceContent kind={kind}/></ProductAccess>;}
 function StudioWorkspaceContent({ kind }: { kind: ProductKind }) {
   const info = productInfo[kind],
     crm = kind === "follonote",
@@ -427,6 +427,7 @@ function StudioWorkspaceContent({ kind }: { kind: ProductKind }) {
           </div>
         </header>
         <main className="app-content">
+          <DemoNotice workspace />
           <div className={"mode-banner " + (demo ? "" : "cloud-banner")}>
             <b>
               {demo ? "가상 자료 · 브라우저 체험" : "회사 공유 · 초기 검증판"}
@@ -434,7 +435,7 @@ function StudioWorkspaceContent({ kind }: { kind: ProductKind }) {
             <span>
               {demo
                 ? "입력 내용은 이 브라우저에만 저장됩니다. 담당자 전환은 권한 흐름 시연이며 실제 다른 사용자와 공유되지 않습니다."
-                : "데모 체험은 무료입니다. 가상 자료로 확인하고 실제 업무 제작은 별도로 상담하세요."}
+                : "회사 공간의 권한에 따라 자료가 표시됩니다."}
             </span>
           </div>
           {error && (

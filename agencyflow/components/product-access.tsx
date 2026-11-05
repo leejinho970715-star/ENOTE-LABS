@@ -4,8 +4,8 @@ import {db,configureDemoIdentity} from '../lib/data';
 import config from '../../supabase/public-config.json';
 import {accountLabel,loginAddress,normalizeUsername,OWNER_USERNAME,registerUsername} from '../../shared/identity.js';
 import {demoOffer,demoPrivacy,cloudNotice} from '../../shared/service-notice.js';
-function DemoNotice(){return <aside className="service-notice" aria-label="무료 데모와 자료 안내"><strong>{demoOffer}</strong><p>{demoPrivacy}</p><p>{cloudNotice}</p><a href="https://enote-labs.vercel.app/legal/privacy/" target="_blank" rel="noopener noreferrer">자료 처리·삭제 요청 안내 ↗</a></aside>;}
-export default function ProductAccess({name,children}:{name:string;children:ReactNode}){
+export function DemoNotice({workspace=false}:{workspace?:boolean}){return <aside className={workspace?"service-notice workspace-notice":"service-notice"} aria-label="무료 데모와 자료 안내"><strong>{demoOffer}</strong><p>{demoPrivacy}</p><p>{cloudNotice}</p><a href="https://enote-labs.vercel.app/legal/privacy/" target="_blank" rel="noopener noreferrer">자료 처리·삭제 요청 안내 ↗</a></aside>;}
+export default function ProductAccess({name,children,noticeInWorkspace=false}:{name:string;children:ReactNode;noticeInWorkspace?:boolean}){
  const [identity,setIdentity]=useState(''),[label,setLabel]=useState(''),[checking,setChecking]=useState(true),[busy,setBusy]=useState(false),[error,setError]=useState(''),[signup,setSignup]=useState(false),[username,setUsername]=useState('');
  useEffect(()=>{let alive=true,revision=0;const accept=(user:any)=>{if(!alive)return;configureDemoIdentity(user?.id||'');setIdentity(user?.id||'');setLabel(accountLabel(user));setChecking(false);};
   const initial=revision;db.auth.getUser().then(r=>{if(revision===initial)accept(r.data.user);}).catch(()=>{if(revision===initial)accept(null);});
@@ -31,5 +31,5 @@ export default function ProductAccess({name,children}:{name:string;children:Reac
  <label>비밀번호{signup?' (10자 이상)':''}<input name="password" type="password" autoComplete={signup?'new-password':'current-password'} required minLength={signup?10:undefined} maxLength={128}/></label>
  {signup&&normalizeUsername(username)===OWNER_USERNAME&&<label>대표 관리자 확인 비밀번호<input name="ownerPassword" type="password" required autoComplete="off" maxLength={72}/><small>대표 전용 아이디를 보호하기 위한 기존 관리자 비밀번호입니다.</small></label>}
  <button className="button primary" disabled={busy}>{busy?'처리 중…':signup?'가입하고 시작하기':'로그인하고 계속하기'}</button></form><div className="actions"><button className="button" disabled={busy} onClick={()=>{setSignup(!signup);setError('');}}>{signup?'이미 계정이 있다면 로그인':'처음이라면 회원가입'}</button><a className="button" href="https://enote-labs.vercel.app/">제품 소개로 돌아가기</a></div><p className="muted">이메일 인증은 필요하지 않습니다. 기존 이메일 계정은 이메일과 비밀번호로 로그인할 수 있습니다. 회사 자료는 소속과 역할에 따라 표시됩니다.</p></section></main>;
- return <><div className="product-authbar"><span>로그인됨 · {label}</span><button onClick={async()=>{const r=await db.auth.signOut();if(r.error)setError(r.error.message);}}>로그아웃</button>{error&&<p role="alert">{error}</p>}</div><DemoNotice/><div key={identity}>{children}</div></>;
+ return <><div className="product-authbar"><span>로그인됨 · {label}</span><button onClick={async()=>{const r=await db.auth.signOut();if(r.error)setError(r.error.message);}}>로그아웃</button>{error&&<p role="alert">{error}</p>}</div>{!noticeInWorkspace&&<DemoNotice/>}<div key={identity}>{children}</div></>;
 }

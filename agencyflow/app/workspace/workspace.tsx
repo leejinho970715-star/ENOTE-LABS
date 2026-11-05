@@ -1,6 +1,6 @@
 "use client";
 import {loginAddress} from '../../../shared/identity.js';
-import ProductAccess from "../../components/product-access";
+import ProductAccess, { DemoNotice } from "../../components/product-access";
 import {
   useCallback,
   useEffect,
@@ -66,7 +66,7 @@ const labels: Record<View, string> = {
 };
 const safeMessage = (e: unknown) =>
   e instanceof Error ? e.message : "작업을 완료하지 못했습니다.";
-export default function Workspace(){return <ProductAccess name="ProjectFlow"><WorkspaceContent/></ProductAccess>;}
+export default function Workspace(){return <ProductAccess name="ProjectFlow" noticeInWorkspace><WorkspaceContent/></ProductAccess>;}
 function WorkspaceContent() {
   const [state, setState] = useState<State>(emptyState),
     [demo, setDemo] = useState(true),
@@ -472,6 +472,7 @@ function WorkspaceContent() {
           </div>
         </header>
         <main className="app-content">
+          <DemoNotice workspace />
           <div className={"mode-banner " + (demo ? "" : "cloud-banner")}>
             <b>
               {demo ? "가상 프로젝트 · 샘플 체험" : "회사 데이터 · 초기 검증판"}
@@ -479,7 +480,7 @@ function WorkspaceContent() {
             <span>
               {demo
                 ? "이 브라우저에만 저장됩니다. 실제 팀·고객과 공유되지 않으며 역할 전환은 시연용입니다."
-                : "데모 체험은 무료입니다. 회사 모드 자료는 해외 DB에 저장되므로 가상 자료로 검증하세요."}
+                : "회사 공간의 권한에 따라 자료가 표시됩니다."}
             </span>
           </div>
           {error && (

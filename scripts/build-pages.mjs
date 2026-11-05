@@ -51,7 +51,7 @@ export async function api(path,body){
  throw new Error('공개 체험 자료에 없는 요청입니다.');
 }`);
 let app=await read('workspace.js');
-app=app.replace('<main class="page">','<main class="page">'+noticeHTML());
+app=app.replace('<main class="page">','<main class="page">'+noticeHTML({workspace:true}));
 app=app.replace(/async function api\(path,body\)\{[\s\S]*?\n\}/,"// Data is a public synthetic snapshot, with no authentication or mutations.");
 app="import {api} from './pages-api.js';\n"+app;
 app=app.replace("const roleText={owner:","const roleText={viewer:'공개 체험',owner:");
@@ -74,7 +74,7 @@ await writeFile(new URL('workspace-app.js',output),app);
 await writeFile(new URL('workspace.js',output),`import {requireProductLogin} from './auth-gate.js';if(await requireProductLogin('${base}'))await import('./workspace-app.js');`);
 const html=(await read('workspace.html')).replaceAll('__FLOWNOTE_ORIGIN__/workspace',origin+base+'workspace/').replaceAll('__FLOWNOTE_ORIGIN__',origin+base.slice(0,-1)).replaceAll('href="/','href="'+base).replaceAll('src="/','src="'+base).replace('</head>','<meta name="robots" content="noindex,follow"></head>');
 await writeFile(new URL('workspace/index.html',output),html.replace('<body>','<body class="auth-pending">'));
-await writeFile(new URL('csv.html',output),(await read('index.html')).replace('<main',noticeHTML()+'<main').replace('class="report-demo"','class="report-demo auth-pending"').replaceAll('__FLOWNOTE_ORIGIN__/workspace',origin+base+'csv.html').replaceAll('__FLOWNOTE_ORIGIN__',origin+base.slice(0,-1)).replaceAll('href="/','href="'+base).replace('</head>','<meta name="robots" content="noindex,follow"></head>'));
+await writeFile(new URL('csv.html',output),(await read('index.html')).replace(/<main[^>]*>/,tag=>tag+noticeHTML({workspace:true})).replace('class="report-demo"','class="report-demo auth-pending"').replaceAll('__FLOWNOTE_ORIGIN__/workspace',origin+base+'csv.html').replaceAll('__FLOWNOTE_ORIGIN__',origin+base.slice(0,-1)).replaceAll('href="/','href="'+base).replace('</head>','<meta name="robots" content="noindex,follow"></head>'));
 await writeFile(new URL('csv-app.js',output),(await read('app.js')).replaceAll('href="/workspace"',`href="${base}workspace/"`));
 await writeFile(new URL('app.js',output),`import {requireProductLogin} from './auth-gate.js';if(await requireProductLogin('${base}'))await import('./csv-app.js');`);
 await build({entryPoints:[fileURLToPath(new URL('auth-gate.js',source))],outfile:fileURLToPath(new URL('auth-gate.js',output)),bundle:true,minify:true,format:'esm',target:'es2020'});
