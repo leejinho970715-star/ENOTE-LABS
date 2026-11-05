@@ -44,3 +44,7 @@ body.auth-pending>:not(#product-access):not(noscript){display:none!important}#pr
 
 .service-notice.workspace-notice{max-width:none;margin:0 0 16px;padding:16px 20px}
 @media(max-width:640px){.service-notice.workspace-notice{padding:14px}}
+footer.enote-product-footer{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin-block:24px 0;padding:16px 0 68px;border-top:1px solid currentColor;font-size:14px;line-height:1.6;overflow-wrap:anywhere}
+footer.enote-product-footer :is(span,small){margin:0;color:inherit;font-size:inherit}
+footer.enote-product-footer a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.report-demo>footer.enote-product-footer{margin-inline:auto;padding-inline:20px;max-width:1120px}

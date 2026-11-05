@@ -34,6 +34,7 @@ import {
   type Feedback,
 } from "../../lib/domain";
 import ProductGuide from "../../components/product-guide";
+import ProductFooter from "../../components/product-footer";
 import OperationsPanel from "../../components/operations-panel";
 import DataChart from "../../components/data-chart";
 import {countSeries,dueSeries} from "../../../demos/weekly-report/charts.js";
@@ -1902,6 +1903,7 @@ function WorkspaceContent() {
               )}
             </>
           )}
+          <ProductFooter />
         </main>
       </div>
       {modal && (

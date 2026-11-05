@@ -36,7 +36,7 @@ function render(){
   ${state.company.isDemo?'<div class="sample-note"><b>샘플 회사 · 가상 데이터</b> 보고서 상태와 승인·저장 기능은 실제로 동작합니다. 고객 실적이 아닙니다. 체험 계정은 로그아웃하면 다시 접근할 수 없습니다.</div>':''}
   ${error?`<div class="alert error" role="alert">${e(error)}</div>`:''}${notice?`<div class="alert success" role="status">${e(notice)}</div>`:''}${busy?'<div class="busy" role="status">저장된 상태를 확인하고 있습니다…</div>':''}
   ${['people','ledger'].includes(view)?'<section id="business-basics"></section>':view==='home'?home():view==='projects'?projects():view==='compose'?compose():view==='reports'?reports():view==='team'?team():view==='help'?manual():audit()}
-  <footer>FLOWNOTE / 고객별로 연결하고, 승인한 버전을 남깁니다.<span>광고비는 대행사의 매출·이익이 아닙니다. 전달 기록은 고객 수신 확인이 아닙니다.</span></footer></main></div></div><button class="guide-fab" data-action="help-open" ${helpOpen?'hidden':''}><span>?</span> 사용 가이드</button>${helpOpen?guidePanel():''}`;
+  <footer>FLOWNOTE / 고객별로 연결하고, 승인한 버전을 남깁니다.<span>광고비는 대행사의 매출·이익이 아닙니다. 전달 기록은 고객 수신 확인이 아닙니다.</span></footer><footer class="enote-product-footer" aria-label="운영사 정보"><a href="https://enote-labs.vercel.app/">ENOTE-LABS (이노트랩스)</a><span>대표자 · 이은규</span><small>© 2026.10 ENOTE-LABS. All rights reserved.</small></footer></main></div></div><button class="guide-fab" data-action="help-open" ${helpOpen?'hidden':''}><span>?</span> 사용 가이드</button>${helpOpen?guidePanel():''}`;
   if(['people','ledger'].includes(view))mountBusinessBasics(root.querySelector('#business-basics'),view);
 }
 function renderAuth(){

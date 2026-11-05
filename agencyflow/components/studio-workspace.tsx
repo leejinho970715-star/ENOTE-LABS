@@ -9,6 +9,7 @@ import {
   type FormEvent,
 } from "react";
 import ProductGuide from "./product-guide";
+import ProductFooter from "./product-footer";
 import OperationsPanel from "./operations-panel";
 import {duplicateContacts,koreaDay} from "../lib/operations";
 import DataChart from "./data-chart";
@@ -1229,6 +1230,7 @@ function StudioWorkspaceContent({ kind }: { kind: ProductKind }) {
               )}
             </>
           )}
+          <ProductFooter />
         </main>
       </div>
       {modal && (
